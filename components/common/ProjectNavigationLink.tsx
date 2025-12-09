@@ -15,7 +15,7 @@ export default function ProjectNavigationLink({
       href={href}
     >
       <div className="py-1 px-2 rounded-sm border text-xs">{title[0]}</div>
-      <p className="text-xs">{title}</p>
+      <p className="text-xs font-medium">{title}</p>
     </Link>
   );
 }

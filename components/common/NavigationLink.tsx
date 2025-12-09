@@ -23,7 +23,7 @@ export default function NavigationLink({
       href={href}
     >
       <Icon icon={icon} />
-      <p className="text-sm">{title}</p>
+      <p className="text-sm font-medium">{title}</p>
     </Link>
   );
 }

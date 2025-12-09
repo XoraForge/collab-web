@@ -1,4 +1,5 @@
 import SideNav from "@/components/common/SideNav";
+import User from "@/components/common/User";
 import Icon from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 
@@ -11,16 +12,17 @@ export default function Page() {
         {/* Header */}
         <div className="bg-[#353535] size-full h-[65px] w-full flex items-center justify-between px-6">
           <div className="w-[300px]">
-            <Input placeholder="Search Anything..." className="text-white" />
+            <Input
+              placeholder="Search Anything..."
+              className="text-white placeholder:text-white"
+            />
           </div>
 
           <div className="flex gap-x-5 items-center">
             <Icon icon="nrk:latest-news" fontSize={22} />
             <Icon icon="lets-icons:message-alt-fill" fontSize={20} />
             <Icon icon="ion:notifcations" fontSize={17} />
-            <div className="ml-4">
-              <div className="border rounded-md px-3 py-1">Join Voicecall</div>
-            </div>
+            <User />
           </div>
         </div>
         {/* Body */}
