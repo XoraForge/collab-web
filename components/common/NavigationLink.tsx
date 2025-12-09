@@ -19,7 +19,7 @@ export default function NavigationLink({
   const isSelected = pathname == href ? "text-white bg-[#383838]" : "";
   return (
     <Link
-      className={`flex items-center gap-x-3 text-[#ffffff70] hover:text-white hover:bg-[#383838] p-2 rounded-sm ${isSelected} ${className}`}
+      className={`flex items-center gap-x-3 text-[#ffffff70] hover:text-white hover:bg-[#383838] duration-200 ease-in-out p-2 rounded-sm ${isSelected} ${className}`}
       href={href}
     >
       <Icon icon={icon} />
