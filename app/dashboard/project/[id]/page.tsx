@@ -10,9 +10,9 @@ export default async function page({ params }) {
   const { id } = await params;
 
   return (
-    <div className="flex flex-col size-full">
+    <div className="flex flex-col size-full ">
       {/* Banner */}
-      <div className="h-fit w-full bg-[#242424] border-b border-[#313131] flex justify-center">
+      <div className="w-full bg-[#242424] border-b border-[#313131] flex justify-center">
         {/* Image -> Name -> Team Members -> Invite / Edit */}
         <div className="w-[80%] py-6 flex flex-col gap-y-8">
           <div className="flex justify-between items-center text-white">
@@ -70,7 +70,10 @@ export default async function page({ params }) {
       </div>
 
       {/* Screens */}
-      <div className="h-full bg-[#181818] flex justify-center">
+      <div
+        className="bg-[#181818] flex justify-center"
+        style={{ height: "calc(802px - 148px)" }}
+      >
         {/* For overview, it will be overview | activity */}
         <div className="w-[80%] flex gap-x-6 mt-5">
           <div className="flex flex-col w-[70%] overflow-y-auto no-scrollbar gap-y-3">

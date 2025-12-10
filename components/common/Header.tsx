@@ -5,7 +5,7 @@ import User from "./User";
 
 export default function Header() {
   return (
-    <div className="bg-[#353535] size-full h-[60px] w-full flex items-center justify-between px-6">
+    <div className="bg-[#353535] py-3 w-full flex items-center justify-between px-6">
       <div className="w-full flex items-center gap-x-4">
         {/* Navigation */}
         <div className="flex gap-x-3 pr-5 border-r border-white">
