@@ -123,3 +123,32 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .small-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 8px;
+  }
+
+  .small-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .small-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+    border-radius: 4px;
+  }
+
+  .small-scrollbar::-webkit-scrollbar-button,
+  .small-scrollbar::-webkit-scrollbar-corner {
+    display: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
