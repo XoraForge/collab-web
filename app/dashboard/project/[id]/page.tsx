@@ -1,6 +1,7 @@
 import ProjectTab from "@/components/common/ProjectTab";
 import Activity from "@/components/dashboard/project/Activity";
 import DetailTitle from "@/components/dashboard/project/DetailTitle";
+import Tabs from "@/components/dashboard/project/Tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BookOpenText } from "lucide-react";
@@ -58,14 +59,7 @@ export default async function page({ params }) {
             </div>
           </div>
           {/* Navigation */}
-          <div className="flex gap-x-12 w-full">
-            <ProjectTab title="Overview" />
-            <ProjectTab title="Chat" />
-            <ProjectTab title="Team Members" />
-            <ProjectTab title="Schedule" />
-            <ProjectTab title="Notes" />
-            <ProjectTab title="Files" />
-          </div>
+          <Tabs />
         </div>
       </div>
 
