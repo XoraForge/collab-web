@@ -5,12 +5,12 @@ import { Button } from "../ui/button";
 import { useDialogContext } from "@/lib/DialogContext";
 
 export default function ProjectCreationLink({ title }: { title: string }) {
-  const { setIsDialogOpen } = useDialogContext();
+  const { handleOpenDialog } = useDialogContext();
   return (
     <Button
       className="text-xs font-medium justify-start"
       variant="outline"
-      onClick={() => setIsDialogOpen(true)}
+      onClick={() => handleOpenDialog("projectCreation")}
     >
       <Plus />
       {title}
