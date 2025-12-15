@@ -8,6 +8,7 @@ import Image from "next/image";
 import Logo from "./Logo";
 import Icon from "../ui/icon";
 import { Badge } from "../ui/badge";
+import ProjectCreationLink from "./ProjectCreationLink";
 
 interface SideNavDropdownProps {
   title: string;
@@ -96,6 +97,7 @@ export default function SideNav() {
                 href="/dashboard/project/ict352-artificial-intelligence"
                 title="Artificial Intelligence"
               />
+              <ProjectCreationLink title="Create / Join Project" />
             </SideNavDropdown>
           </div>
           {/* Recent Changes */}

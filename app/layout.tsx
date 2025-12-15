@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
+import DialogLayout from "@/components/dialog/DialogLayout";
+import DialogContextProvider from "@/lib/DialogContext";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -21,9 +23,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${openSans.variable} min-h-screen max-w-svw antialiased dark`}
+        className={`${openSans.variable} min-h-screen max-w-svw antialiased dark relative`}
       >
-        {children}
+        <DialogContextProvider>
+          {children}
+          <DialogLayout />
+        </DialogContextProvider>
       </body>
     </html>
   );

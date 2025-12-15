@@ -1,5 +1,6 @@
 import ProjectTab from "@/components/common/ProjectTab";
 import Activity from "@/components/dashboard/project/Activity";
+import ActivityDetail from "@/components/dashboard/project/ActivityDetail";
 import DetailTitle from "@/components/dashboard/project/DetailTitle";
 import Tabs from "@/components/dashboard/project/Tabs";
 import { Badge } from "@/components/ui/badge";
@@ -269,40 +270,14 @@ export default async function page({ params }) {
               <h1 className="text-lg font-medium">Recent Activities</h1>
               <div className="flex flex-col gap-y-6 mt-3">
                 <Activity date="Today" time="10:31PM">
-                  <div className="flex gap-x-2 items-center">
-                    <div className="size-5 relative overflow-hidden">
-                      <Image
-                        src="/testimage.png"
-                        fill
-                        className="object-cover"
-                        alt="user"
-                      />
-                    </div>
-                    <p className="text-sm font-medium whitespace-nowrap">
-                      Alex Hunter{" "}
-                      <span className="font-normal">
-                        has invited <b>3 others</b> as <b>Editor</b>
-                      </span>
-                    </p>
-                  </div>
+                  <ActivityDetail>
+                    invited <b>3 others</b> as <b>Editor</b>
+                  </ActivityDetail>
                 </Activity>
                 <Activity date="12 September" time="10:31PM">
-                  <div className="flex gap-x-2 items-center">
-                    <div className="size-5 relative overflow-hidden">
-                      <Image
-                        src="/testimage.png"
-                        fill
-                        className="object-cover"
-                        alt="user"
-                      />
-                    </div>
-                    <p className="text-sm font-medium whitespace-nowrap">
-                      Alex Hunter
-                      <span className="font-normal">
-                        has <b>initialized</b> the project
-                      </span>
-                    </p>
-                  </div>
+                  <ActivityDetail>
+                    <b>initialized</b> the project
+                  </ActivityDetail>
                 </Activity>
               </div>
             </div>
