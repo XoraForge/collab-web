@@ -60,7 +60,7 @@ export default function SideNav() {
           <div>
             <SideNavDropdown title="Main Menu" noSetter={true}>
               <NavigationLink
-                href="/dashboard/"
+                href="/dashboard"
                 icon="material-symbols:dashboard-outline-rounded"
                 title="Dashboard"
               />
@@ -97,7 +97,7 @@ export default function SideNav() {
                 href="/dashboard/project/ict352-artificial-intelligence"
                 title="Artificial Intelligence"
               />
-              <ProjectCreationLink title="Create / Join Project" />
+              <ProjectCreationLink title="Create New Project" />
             </SideNavDropdown>
           </div>
           {/* Recent Changes */}
