@@ -8,7 +8,7 @@ export default function ProjectCreationLink({ title }: { title: string }) {
   const { handleOpenDialog } = useDialogContext();
   return (
     <Button
-      className="text-xs font-medium justify-start"
+      className="text-xs font-medium justify-start cursor-pointer"
       variant="outline"
       onClick={() => handleOpenDialog("projectCreation")}
     >
