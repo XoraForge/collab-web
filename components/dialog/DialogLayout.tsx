@@ -2,9 +2,10 @@
 
 import { useDialogContext } from "@/lib/DialogContext";
 import { X } from "lucide-react";
+import InitProjectDialog from "./variants/InitProjectDialog";
 
 export default function DialogLayout() {
-  const { isDialogOpen, handleCloseDialog } = useDialogContext();
+  const { isDialogOpen, isDialogType, handleCloseDialog } = useDialogContext();
 
   if (!isDialogOpen) return;
 
@@ -20,6 +21,7 @@ export default function DialogLayout() {
           <X size={15} onClick={() => handleCloseDialog()} />
         </div>
         {/* Title & Children */}
+        {isDialogType == "projectCreation" && <InitProjectDialog />}
       </div>
     </div>
   );
