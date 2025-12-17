@@ -12,7 +12,7 @@ export default function Tabs() {
         setIsActive={setCurrentTab}
       />
       <ProjectTab
-        title="Chat"
+        title="Assignment"
         isActive={currentTab}
         setIsActive={setCurrentTab}
       />
