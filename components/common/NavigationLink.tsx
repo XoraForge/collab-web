@@ -10,12 +10,14 @@ export default function NavigationLink({
   title,
   className,
   isExpanded = false,
+  handleExpandedToggle,
 }: {
   icon: string;
   href: string;
   title: string;
   className?: string;
   isExpanded?: boolean;
+  handleExpandedToggle: () => void;
 }) {
   const pathname = usePathname();
 
@@ -25,6 +27,7 @@ export default function NavigationLink({
     <Link
       className={`flex items-center gap-x-3 text-[#ffffff70] hover:text-white hover:bg-[#383838] duration-200 ease-in-out p-2 rounded-sm ${isSelected} ${className}`}
       href={href}
+      onClick={handleExpandedToggle}
     >
       <Icon icon={icon} className={isExpanded ? "size-5" : "size-4"} />
       {!isExpanded && <p className="text-sm font-medium">{title}</p>}

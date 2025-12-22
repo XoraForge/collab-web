@@ -7,17 +7,26 @@ import ProjectCreationLink from "../ProjectCreationLink";
 import ProjectNavigationLink from "../ProjectNavigationLink";
 import SideNavDropdown from "../SideNavDropdown";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
-export default function MainNav() {
+interface MainNavProps {
+  handleExpandedTrue: () => void;
+  handleExpandedFalse: () => void;
+}
+
+export default function MainNav({
+  handleExpandedTrue,
+  handleExpandedFalse,
+}: MainNavProps) {
   const [isOpen, setIsOpen] = useState(true);
+
   return (
     <div className={`flex flex-col size-full justify-between py-6 px-3`}>
       <div className="flex flex-col gap-y-5">
         <div className="flex flex-col gap-y-8">
           {/* We need to split it into three sections */}
           {/* Main Menu - Dashboard / Notes / Schedule / Today's Todos */}
-          <Logo />
+          <Logo handleOnClick={handleExpandedFalse} />
 
           <div>
             <SideNavDropdown title="Main Menu" noSetter={true}>
@@ -25,23 +34,32 @@ export default function MainNav() {
                 href="/dashboard"
                 icon="material-symbols:dashboard-outline-rounded"
                 title="Dashboard"
+                handleExpandedToggle={handleExpandedFalse}
               />
               <NavigationLink
                 href="/dashboard/schedule"
                 icon="uil:schedule"
                 title="Schedule"
+                handleExpandedToggle={handleExpandedFalse}
               />
               <NavigationLink
                 href="/dashboard/notes"
                 icon="material-symbols:notes"
                 title="Notes"
+                handleExpandedToggle={handleExpandedFalse}
               />
               <NavigationLink
                 href="/dashboard/activities"
                 icon="material-symbols:history"
                 title="Activities"
+                handleExpandedToggle={handleExpandedFalse}
               />
-              <NavigationLink href="/chat" icon="bx:chat" title="Inbox" />
+              <NavigationLink
+                href="/dashboard/chat"
+                icon="bx:chat"
+                title="Inbox"
+                handleExpandedToggle={handleExpandedFalse}
+              />
             </SideNavDropdown>
           </div>
           {/* Projects - All projects */}
@@ -54,10 +72,12 @@ export default function MainNav() {
               <ProjectNavigationLink
                 href="/dashboard/project/ict374-business-analytics"
                 title="Business Analytics"
+                handleExpandedToggle={handleExpandedTrue}
               />
               <ProjectNavigationLink
                 href="/dashboard/project/ict352-artificial-intelligence"
                 title="Artificial Intelligence"
+                handleExpandedToggle={handleExpandedTrue}
               />
               <ProjectCreationLink title="Create New Project" />
             </SideNavDropdown>
@@ -68,10 +88,12 @@ export default function MainNav() {
               <ProjectNavigationLink
                 href="/dashboard/project/ict374-business-analytics"
                 title="Business Analytics"
+                handleExpandedToggle={handleExpandedTrue}
               />
               <ProjectNavigationLink
                 href="/dashboard/project/ict352-artificial-intelligence"
                 title="Artificial Intelligence"
+                handleExpandedToggle={handleExpandedTrue}
               />
             </SideNavDropdown>
           </div>
@@ -90,12 +112,14 @@ export default function MainNav() {
           icon="material-symbols:settings-outline-rounded"
           title="Settings"
           className="px-1 py-1"
+          handleExpandedToggle={handleExpandedFalse}
         />
         <NavigationLink
           href="/dashboard/help-center"
           icon="material-symbols:help-outline"
           title="Help Center"
           className="px-1 py-1"
+          handleExpandedToggle={handleExpandedFalse}
         />
       </div>
     </div>
