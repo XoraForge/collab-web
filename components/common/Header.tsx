@@ -1,7 +1,8 @@
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Plus } from "lucide-react";
 import Icon from "../ui/icon";
 import User from "./User";
 import NavigationTab from "../header-tabs/NavigationTab";
+import Link from "next/link";
 
 export default function Header() {
   return (
@@ -11,6 +12,9 @@ export default function Header() {
         <div className="flex gap-x-3 pr-5 border-r border-white">
           <ChevronLeft />
           <ChevronRight className="text-gray-600" />
+          <Link href="/dashboard">
+            <Home />
+          </Link>
         </div>
         {/* Tabs */}
         <div className="w-full flex gap-x-1">
