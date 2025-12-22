@@ -2,9 +2,9 @@
 
 import { createContext, useContext, useState } from "react";
 
-type DIALOG_TYPE = "projectCreation" | "";
+export type DIALOG_TYPE = "projectCreation" | "";
 
-type DialogContextType = {
+export type DialogContextType = {
   // Open dialog and set dialog type to type
   handleOpenDialog: (type: DIALOG_TYPE) => void;
   // Close dialog and set dialog back to empty string

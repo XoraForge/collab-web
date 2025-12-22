@@ -35,7 +35,9 @@ export default function TestPage() {
       </div>
       <div className="flex" style={{ height: "812px" }}>
         <div className="w-[85%] h-full overflow-y-auto flex justify-center no-scrollbar">
-          <div className="w-[70%] bg-white h-full mt-5">a</div>
+          <div className="w-[70%] bg-white h-full mt-5 text-black p-6">
+            User can edit in here
+          </div>
         </div>
         <div className="w-[15%] bg-[#202020] flex flex-col px-4 py-2">
           <div className="flex gap-x-2">
