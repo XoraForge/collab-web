@@ -1,10 +1,13 @@
-import { SetStateAction } from "react";
+"use client";
+
+import { useProjectContext } from "@/lib/CurrentProjectContext";
 import Logo from "../Logo";
 import NavigationLink from "../NavigationLink";
 import ProjectCreationLink from "../ProjectCreationLink";
 import ProjectNavigationLink from "../ProjectNavigationLink";
 import SideNavDropdown from "../SideNavDropdown";
 import MiniProjectDetails from "../expanded-nav/MiniProjectDetails";
+import { useEffect, useState } from "react";
 
 interface SideNavProps {
   handleExpandedTrue: () => void;
@@ -15,6 +18,13 @@ export default function ExpandedDoubleNav({
   handleExpandedTrue,
   handleExpandedFalse,
 }: SideNavProps) {
+  const [pageId, setPageId] = useState("");
+  const { name } = useProjectContext();
+
+  useEffect(() => {
+    setPageId(name.replaceAll(" ", "-").toLowerCase());
+  }, [name]);
+
   return (
     <>
       <div className="flex flex-col size-full justify-between w-1/3 items-center border-r py-6">
@@ -116,35 +126,35 @@ export default function ExpandedDoubleNav({
         {/* Project Navigation */}
         <SideNavDropdown title="Components" noSetter={true}>
           <NavigationLink
-            href="/dashboard"
+            href={`/dashboard/project/${pageId}/overview`}
             icon="grommet-icons:overview"
             title="Overview"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
           />
           <NavigationLink
-            href="/dashboard/schedule"
+            href={`/dashboard/project/${pageId}/assignments`}
             icon="fa7-solid:tasks"
             title="Assignments"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
           />
           <NavigationLink
-            href="/dashboard/notes"
+            href={`/dashboard/project/${pageId}/team-members`}
             icon="ri:team-fill"
             title="Team Members"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
           />
           <NavigationLink
-            href="/dashboard/activities"
+            href={`/dashboard/project/${pageId}/activities`}
             icon="grommet-icons:schedule-new"
             title="Schedules"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
           />
           <NavigationLink
-            href="/dashboard/activities"
+            href={`/dashboard/project/${pageId}/activities`}
             icon="grommet-icons:schedule-new"
             title="Notes"
             isExpanded={false}
