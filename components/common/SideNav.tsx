@@ -5,7 +5,7 @@ import MainNav from "./sidenav-variants/MainNav";
 import ExpandedDoubleNav from "./sidenav-variants/ExpandedDoubleNav";
 
 export default function SideNav() {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   function handleExpandedTrue() {
     setIsExpanded(true);

@@ -22,7 +22,7 @@ export default function ProjectNavigationLink({
     <Link
       className={`flex items-center gap-x-2 text-[#ffffff70] hover:text-white hover:bg-[#383838] duration-200 ease-in-out px-1 py-1 rounded-sm ${
         isExpanded && "py-2.5 px-3.5 rounded-sm border text-xs cursor-pointer"
-      } ${pathname == href && "text-white bg-[#383838]"} ${className}`}
+      } ${pathname.includes(href) && "text-white bg-[#383838]"} ${className}`}
       href={href}
       onClick={handleExpandedToggle}
     >

@@ -123,6 +123,7 @@ export default function ExpandedDoubleNav({
       <div className="flex flex-col w-full px-3 py-6 gap-y-4">
         {/* Project Information */}
         <MiniProjectDetails />
+        <hr />
         {/* Project Navigation */}
         <SideNavDropdown title="Components" noSetter={true}>
           <NavigationLink
@@ -155,7 +156,7 @@ export default function ExpandedDoubleNav({
           />
           <NavigationLink
             href={`/dashboard/project/${pageId}/activities`}
-            icon="grommet-icons:schedule-new"
+            icon="fluent:notepad-edit-16-regular"
             title="Notes"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
@@ -163,22 +164,22 @@ export default function ExpandedDoubleNav({
         </SideNavDropdown>
         <SideNavDropdown title="Files" noSetter={true}>
           <NavigationLink
-            href="/dashboard/chat"
-            icon="bx:chat"
+            href="/dashboard/test"
+            icon="icon-park-outline:word"
             title="Word"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
           />
           <NavigationLink
             href="/dashboard/chat"
-            icon="bx:chat"
+            icon="icon-park-outline:excel-one"
             title="Excel"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
           />
           <NavigationLink
             href="/dashboard/chat"
-            icon="bx:chat"
+            icon="icon-park-outline:powerpoint"
             title="PowerPoint"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
