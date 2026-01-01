@@ -16,9 +16,15 @@ interface ExpandedButtonProps {
 function DefButton({ handleOpenDialog, title }: DefButtonProps) {
   return (
     <Button
-      className="text-xs font-medium justify-start cursor-pointer text-[#ffffff70] hover:text-white hover:bg-[#383838] duration-200 ease-in-out"
       variant="outline"
       onClick={() => handleOpenDialog("projectCreation")}
+      className="
+        text-xs font-medium justify-start cursor-pointer
+        text-[#00000070] dark:text-[#ffffff70]
+        hover:text-black dark:hover:text-white
+        hover:bg-[#e5e5e5] dark:hover:bg-[#383838]
+        duration-200 ease-in-out
+      "
     >
       <Plus />
       {title}
@@ -29,8 +35,15 @@ function DefButton({ handleOpenDialog, title }: DefButtonProps) {
 function ExpandedButton({ handleOpenDialog }: ExpandedButtonProps) {
   return (
     <div
-      className="py-2.5 px-2.5 rounded-sm border text-xs cursor-pointer text-[#ffffff70] hover:text-white hover:bg-[#383838] duration-200 ease-in-out"
       onClick={() => handleOpenDialog("projectCreation")}
+      className="
+        py-2.5 px-2.5 rounded-sm border text-xs cursor-pointer
+        text-[#00000070] dark:text-[#ffffff70]
+        border-[#d4d4d4] dark:border-[#404040]
+        hover:text-black dark:hover:text-white
+        hover:bg-[#e5e5e5] dark:hover:bg-[#383838]
+        duration-200 ease-in-out
+      "
     >
       <Plus size={15} />
     </div>

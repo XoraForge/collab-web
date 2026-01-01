@@ -12,8 +12,10 @@ export default function ProjectTab({
   return (
     <div className="cursor-pointer" onClick={() => setIsActive(title)}>
       <p
-        className={`text-[#ffffff50] duration-200 ease-in-out hover:text-[#ffffff] font-medium ${
-          isActive == title && "text-white"
+        className={`duration-200 ease-in-out font-medium ${
+          isActive === title
+            ? "text-(--text)"
+            : "text-(--text)/50 hover:text-(--text)"
         }`}
       >
         {title}

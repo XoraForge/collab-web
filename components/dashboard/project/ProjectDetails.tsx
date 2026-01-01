@@ -18,10 +18,10 @@ export default function ProjectDetails({
   }, [projectName]);
 
   return (
-    <div className="flex justify-between items-center text-white">
+    <div className="flex justify-between items-center text-text">
       {/* Image and Name */}
       <div className="flex gap-x-6 ">
-        <div className="size-32 relative border border-white flex items-center justify-center rounded-md">
+        <div className="size-32 relative border border-border flex items-center justify-center rounded-md">
           <BookOpenText size={50} />
         </div>
         <div className="flex flex-col justify-center gap-y-1.5">

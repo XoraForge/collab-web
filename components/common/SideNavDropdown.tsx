@@ -25,7 +25,9 @@ export default function SideNavDropdown({
         }`}
         onClick={() => !noSetter && setIsOpen && setIsOpen((prev) => !prev)}
       >
-        <h3 className="text-[#ffffff90] text-sm">{title}</h3>
+        <h3 className="text-[#00000070] dark:text-[#ffffff70] text-sm">
+          {title}
+        </h3>
 
         {!noSetter &&
           (isOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />)}
