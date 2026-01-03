@@ -7,6 +7,7 @@ import AdjustableSections from "./layout/AdjustableSections";
 import Icon from "@/components/ui/icon";
 import { useEffect } from "react";
 import { useSidebarContext } from "@/lib/SidebarContext";
+import { Settings } from "lucide-react";
 
 export default function DocumentLayout() {
   const { setIsSidebarVisible } = useSidebarContext();
@@ -24,8 +25,11 @@ export default function DocumentLayout() {
             <Icon icon="icon-park-outline:word" />
             <div className="flex flex-col gap-y-1">
               <h1 className="text-xs font-medium">ICT374 Proposal</h1>
-              <p className="text-xs">3 minutes ago</p>
+              <p className="text-xs">Updated 3 minutes ago</p>
             </div>
+          </div>
+          <div className="flex items-center gap-x-1">
+            <Settings className="size-3" />
           </div>
         </div>
         <div className="flex flex-col gap-y-2 py-2 border-t">
@@ -37,10 +41,8 @@ export default function DocumentLayout() {
       <div className="col-span-12 border flex flex-col relative">
         <MainHeader />
 
-        {/* Body?: Actual Document (Top) - Criteria (Word count, sentence, paragraph) - Description + Comments (Bottom) */}
         <div className="h-full flex flex-col flex-1">
           <Document />
-          {/* <Guidelines /> */}
         </div>
       </div>
       {/* Column 3: Properties (2) */}
