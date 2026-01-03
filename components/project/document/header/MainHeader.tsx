@@ -9,6 +9,7 @@ import {
   Bold,
   ImageIcon,
   Italic,
+  List,
   Minus,
   MousePointer2,
   Plus,
@@ -60,6 +61,9 @@ export default function MainHeader() {
         </Button>
         <Button variant="ghost">
           <AlignRight />
+        </Button>
+        <Button variant="ghost">
+          <List />
         </Button>
       </div>
       <div className="flex items-center gap-x-2 pr-2">

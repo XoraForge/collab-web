@@ -1,38 +1,40 @@
 "use client";
 
-import { useState } from "react";
 import MainHeader from "./header/MainHeader";
 import SecondaryHeader from "./header/SecondaryHeader";
 import Document from "./layout/Document";
-import { Button } from "@/components/ui/button";
-import {
-  LockKeyholeIcon,
-  LockKeyholeOpen,
-  LucideChevronRight,
-  Rows3Icon,
-} from "lucide-react";
-import Section from "./doc-section/Section";
+import AdjustableSections from "./layout/AdjustableSections";
+import Icon from "@/components/ui/icon";
+import { useEffect } from "react";
+import { useSidebarContext } from "@/lib/SidebarContext";
 
 export default function DocumentLayout() {
+  const { setIsSidebarVisible } = useSidebarContext();
+
+  useEffect(() => {
+    setIsSidebarVisible(false);
+  }, []);
+
   return (
     <div className="grid grid-cols-16 size-full">
       {/* Column 1: Sections (2) */}
-      <div className="col-span-2 border p-3">
-        {/* CoverPage / Table of Content */}
-        <div className="flex flex-col gap-y-1.5">
-          <Section isLocked={true} title="Cover" />
-          <Section isLocked={true} title="Table of Content" />
-          <Section isLocked={true} title="Introduction" />
-          <Section isLocked={false} title="Research" />
-          <Section isLocked={false} title="SWOT Analysis" />
-          <Section isLocked={false} title="Comparison" />
-          <Section isLocked={true} title="Conclusion" />
+      <div className="col-span-2 border p-3 flex flex-col gap-y-3">
+        <div className="flex justify-between p-2">
+          <div className="flex items-center gap-x-3">
+            <Icon icon="icon-park-outline:word" />
+            <div className="flex flex-col gap-y-1">
+              <h1 className="text-xs font-medium">ICT374 Proposal</h1>
+              <p className="text-xs">3 minutes ago</p>
+            </div>
+          </div>
         </div>
-        {/* Sections */}
-        {/* Footer / Citations */}
+        <div className="flex flex-col gap-y-2 py-2 border-t">
+          <h1 className="text-xs font-medium">Sections</h1>
+          <AdjustableSections />
+        </div>
       </div>
-      {/* Column 2: Body (10) */}
-      <div className="col-span-11 border flex flex-col relative">
+      {/* Column 2: Body (12) */}
+      <div className="col-span-12 border flex flex-col relative">
         <MainHeader />
 
         {/* Body?: Actual Document (Top) - Criteria (Word count, sentence, paragraph) - Description + Comments (Bottom) */}
@@ -41,8 +43,8 @@ export default function DocumentLayout() {
           {/* <Guidelines /> */}
         </div>
       </div>
-      {/* Column 3: Properties (3) */}
-      <div className="col-span-3 border">
+      {/* Column 3: Properties (2) */}
+      <div className="col-span-2 border">
         <SecondaryHeader />
       </div>
     </div>
