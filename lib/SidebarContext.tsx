@@ -16,8 +16,9 @@ export type SidebarType = {
 const SidebarContext = createContext<SidebarType | null>(null);
 
 export function useSidebarContext() {
-  if (!SidebarContext) throw new Error("Sidebar context is used outside!");
-  return useContext(SidebarContext);
+  const context = useContext(SidebarContext);
+  if (!context) throw new Error("Sidebar context is used outside!");
+  return context;
 }
 
 export default function SidebarProvider({
