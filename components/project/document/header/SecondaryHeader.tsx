@@ -16,25 +16,27 @@ export default function SecondaryHeader() {
         defaultValue="item-1"
       >
         <AccordionItem value="section-info">
-          <AccordionTrigger>Section Information</AccordionTrigger>
+          <AccordionTrigger className="text-xs">
+            Section Information
+          </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <SectionInformation />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="tasks">
-          <AccordionTrigger>Tasks</AccordionTrigger>
+          <AccordionTrigger className="text-xs">Tasks</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <SectionInformation />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="comments">
-          <AccordionTrigger>Comments</AccordionTrigger>
+          <AccordionTrigger className="text-xs">Comments</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <SectionInformation />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="problems">
-          <AccordionTrigger>Problems</AccordionTrigger>
+          <AccordionTrigger className="text-xs">Problems</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <SectionInformation />
           </AccordionContent>
