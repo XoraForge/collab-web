@@ -56,7 +56,7 @@ export default function Messenger() {
     <div className="absolute bottom-0 right-0">
       {!isMessengerOpen ? (
         <div
-          className="flex items-center gap-x-2 bg-black p-3 rounded-full cursor-pointer relative mb-2 mr-2"
+          className="flex items-center gap-x-2 text-black dark:text-white bg-gray-100 dark:bg-black border dark:border-0 p-3 rounded-full cursor-pointer relative mb-2 mr-2"
           onClick={() => setIsMessengerOpen(true)}
         >
           <Icon icon="token:chat" fontSize={40} />
