@@ -16,7 +16,7 @@ export default function SideNav() {
 
   return (
     <section
-      className={`flex bg-(--sidebar-main) h-full w-[250px] justify-between duration-200 ease-in-out transition-all ${
+      className={`flex bg-bg h-full w-[250px] justify-between duration-200 ease-in-out transition-all ${
         isExpanded && "w-[350px]"
       }`}
     >
