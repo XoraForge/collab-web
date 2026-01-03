@@ -13,11 +13,11 @@ export default function SectionDetail({
 }) {
   return (
     <div
-      className={`flex justify-between items-center pb-2 border-b text-[#00000095] dark:text-[#ffffff95] ${className}`}
+      className={`flex justify-between text-xs items-center pb-2 text-[#00000095] dark:text-[#ffffff95] ${className}`}
     >
       <div className="flex gap-x-2 items-center">
         <Icon icon={icon} />
-        <p className="text-sm font-medium">{title}</p>
+        <p className="font-medium">{title}</p>
       </div>
       {children}
     </div>
