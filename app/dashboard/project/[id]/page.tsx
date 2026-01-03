@@ -1,13 +1,10 @@
-import ProjectTab from "@/components/common/ProjectTab";
 import Activity from "@/components/dashboard/project/Activity";
 import ActivityDetail from "@/components/dashboard/project/ActivityDetail";
 import DetailTitle from "@/components/dashboard/project/DetailTitle";
 import ProjectDetails from "@/components/dashboard/project/ProjectDetails";
 import Tabs from "@/components/dashboard/project/Tabs";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useProjectContext } from "@/lib/CurrentProjectContext";
-import { BookOpenText } from "lucide-react";
+
 import Image from "next/image";
 
 export default async function page({ params }) {
@@ -16,24 +13,22 @@ export default async function page({ params }) {
   const projectName = id.replaceAll("-", " ").toUpperCase();
 
   return (
-    <div className="flex flex-col size-full ">
+    <div className="flex flex-col size-full bg-bg text-text">
       {/* Banner */}
-      <div className="w-full bg-[#242424] border-b border-[#313131] flex justify-center">
-        {/* Image -> Name -> Team Members -> Invite / Edit */}
+      <div className="w-full bg-card dark:bg-(--default-sidebar) border-b border-border flex justify-center">
         <div className="w-[80%] py-6 flex flex-col gap-y-8">
           <ProjectDetails projectName={projectName} />
-          {/* Navigation */}
           <Tabs />
         </div>
       </div>
 
       {/* Screens */}
       <div
-        className="bg-[#181818] flex justify-center"
+        className="flex justify-center"
         style={{ height: "calc(802px - 148px)" }}
       >
-        {/* For overview, it will be overview | activity */}
         <div className="w-[80%] flex gap-x-6 mt-5">
+          {/* Left */}
           <div className="flex flex-col w-[70%] overflow-y-auto no-scrollbar gap-y-3">
             <h3 className="text-lg">Overview</h3>
             <hr />
@@ -182,61 +177,54 @@ export default async function page({ params }) {
               </p>
             </div>
           </div>
+
+          {/* Right */}
           <div className="w-[30%] h-fit flex flex-col gap-y-3">
-            <div className="border border-[#494949] rounded-md flex flex-col gap-y-2 px-3 py-2">
+            {/* Project Details */}
+            <div className="bg-card dark:bg-(--default-sidebar) border border-border rounded-md px-3 py-2">
               <h1 className="text-lg font-medium">Project Details</h1>
-              <div className="flex flex-col gap-y-2">
+
+              <div className="flex flex-col gap-y-2 opacity-70">
                 <div className="flex justify-between">
                   <DetailTitle icon="mingcute:time-line" title="Created At" />
                   <p>12 September 2025, 10:31PM</p>
                 </div>
-                <div className="flex justify-between">
+
+                <div className="flex justify-between items-center">
                   <DetailTitle icon="lets-icons:progress" title="Status" />
                   <Badge variant="destructive">In Progress</Badge>
                 </div>
+
                 <div className="flex justify-between">
                   <DetailTitle icon="stash:calendar-end" title="Due By" />
-                  <p>19 December 2025 (9 days left)</p>
+                  <p>19 December 2025</p>
                 </div>
-                <div className="flex justify-between">
+
+                <div className="flex justify-between items-center">
                   <DetailTitle icon="mdi:users" title="Contributors" />
-                  <div className="flex">
-                    <div className="size-6 relative overflow-hidden">
-                      <Image
-                        src="/testimage.png"
-                        fill
-                        className="object-cover"
-                        alt="user"
-                      />
-                    </div>
+                  <div className="size-6 relative overflow-hidden rounded-full">
+                    <Image
+                      src="/testimage.png"
+                      fill
+                      className="object-cover"
+                      alt="user"
+                    />
                   </div>
-                </div>
-                <div className="flex justify-between">
-                  <DetailTitle
-                    icon="material-symbols:folder"
-                    title="Project Size"
-                  />
-                  <p>1.2MB</p>
-                </div>
-                <div className="flex justify-between">
-                  <DetailTitle
-                    icon="material-symbols:download"
-                    title="Downloads"
-                  />
-                  <p>0</p>
                 </div>
               </div>
             </div>
 
             {/* Activities */}
-            <div className="border border-[#494949] rounded-md flex flex-col gap-y-2 px-3 py-2">
+            <div className="bg-card dark:bg-(--default-sidebar) border border-border rounded-md px-3 py-2">
               <h1 className="text-lg font-medium">Recent Activities</h1>
-              <div className="flex flex-col gap-y-6 mt-3">
+
+              <div className="flex flex-col gap-y-6 mt-3 opacity-70">
                 <Activity date="Today" time="10:31PM">
                   <ActivityDetail>
                     invited <b>3 others</b> as <b>Editor</b>
                   </ActivityDetail>
                 </Activity>
+
                 <Activity date="12 September" time="10:31PM">
                   <ActivityDetail>
                     <b>initialized</b> the project
