@@ -120,7 +120,7 @@ export default function ExpandedDoubleNav({
           />
         </div>
       </div>
-      <div className="flex flex-col w-full px-3 py-6 gap-y-4">
+      <div className="flex flex-col w-full px-3 py-6 border-r gap-y-4">
         {/* Project Information */}
         <MiniProjectDetails />
         <hr />

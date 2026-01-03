@@ -21,7 +21,9 @@ export default function MainNav({
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className={`flex flex-col size-full justify-between py-6 px-3`}>
+    <div
+      className={`flex flex-col size-full justify-between border-r py-6 px-3`}
+    >
       <div className="flex flex-col gap-y-5">
         <div className="flex flex-col gap-y-8">
           {/* We need to split it into three sections */}
