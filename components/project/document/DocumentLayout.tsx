@@ -3,39 +3,47 @@
 import { useState } from "react";
 import MainHeader from "./header/MainHeader";
 import SecondaryHeader from "./header/SecondaryHeader";
-
-export type SelectionType =
-  | "Text"
-  | "Image"
-  | "Paragraph"
-  | "Search"
-  | "Table"
-  | "None";
+import Document from "./layout/Document";
+import { Button } from "@/components/ui/button";
+import {
+  LockKeyholeIcon,
+  LockKeyholeOpen,
+  LucideChevronRight,
+  Rows3Icon,
+} from "lucide-react";
+import Section from "./doc-section/Section";
 
 export default function DocumentLayout() {
-  const [selection, setSelection] = useState<SelectionType>("None");
-
-  function handleOnToggle(selection: SelectionType) {
-    setSelection((prev) => (prev == selection ? "None" : selection));
-  }
   return (
     <div className="grid grid-cols-16 size-full">
       {/* Column 1: Sections (2) */}
-      <div className="col-span-2 border">
+      <div className="col-span-2 border p-3">
         {/* CoverPage / Table of Content */}
+        <div className="flex flex-col gap-y-1.5">
+          <Section isLocked={true} title="Cover" />
+          <Section isLocked={true} title="Table of Content" />
+          <Section isLocked={true} title="Introduction" />
+          <Section isLocked={false} title="Research" />
+          <Section isLocked={false} title="SWOT Analysis" />
+          <Section isLocked={false} title="Comparison" />
+          <Section isLocked={true} title="Conclusion" />
+        </div>
         {/* Sections */}
         {/* Footer / Citations */}
       </div>
       {/* Column 2: Body (10) */}
       <div className="col-span-11 border flex flex-col relative">
-        <MainHeader selection={selection} handleOnToggle={handleOnToggle} />
+        <MainHeader />
 
-        {/* Body?: Criteria? Actual Document? */}
-        <div className="size-full flex items-center justify-center bg-white"></div>
+        {/* Body?: Actual Document (Top) - Criteria (Word count, sentence, paragraph) - Description + Comments (Bottom) */}
+        <div className="h-full flex flex-col flex-1">
+          <Document />
+          {/* <Guidelines /> */}
+        </div>
       </div>
       {/* Column 3: Properties (3) */}
       <div className="col-span-3 border">
-        <SecondaryHeader type={selection} />
+        <SecondaryHeader />
       </div>
     </div>
   );

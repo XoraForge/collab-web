@@ -1,63 +1,78 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Redo2, Search, Table, Text, Undo2 } from "lucide-react";
-import { SelectionType } from "../DocumentLayout";
+import { Input } from "@/components/ui/input";
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  Bold,
+  ImageIcon,
+  Italic,
+  Minus,
+  MousePointer2,
+  Plus,
+  Quote,
+  Redo2,
+  Search,
+  Settings,
+  Table,
+  Text,
+  Underline,
+  Undo2,
+} from "lucide-react";
 
-interface MainHeaderProps {
-  selection: SelectionType;
-  handleOnToggle: (selection: SelectionType) => void;
-}
-
-export default function MainHeader({
-  selection,
-  handleOnToggle,
-}: MainHeaderProps) {
+export default function MainHeader() {
   return (
-    <section className="absolute top-6 left-1/2 translate-x-[-50%] flex flex-col p-2 bg-black">
-      <div className="w-full flex justify-center gap-x-2 items-center">
-        <Button variant="outline" className="rounded-none">
+    <div className="w-full flex justify-center p-1 gap-x-2 items-center border-b">
+      <div className="flex items-center gap-x-2 border-r pr-2">
+        <Button variant="ghost" className="rounded-none">
           <Undo2 />
         </Button>
-        <Button variant="outline" className="rounded-none">
+        <Button variant="ghost" className="rounded-none">
           <Redo2 />
         </Button>
-        <Button
-          variant={selection == "Text" ? "default" : "outline"}
-          className="rounded-none border"
-          onClick={() => handleOnToggle("Text")}
-        >
-          <p className="text-sm">T</p>
+        <Button variant="ghost" className="rounded-none">
+          <Plus />
         </Button>
-        <Button
-          variant={selection == "Image" ? "default" : "outline"}
-          className="rounded-none border"
-          onClick={() => handleOnToggle("Image")}
-        >
-          <ImageIcon />
-        </Button>
-        <Button
-          variant={selection == "Paragraph" ? "default" : "outline"}
-          className="rounded-none border"
-          onClick={() => handleOnToggle("Paragraph")}
-        >
-          <Text />
-        </Button>
-        <Button
-          variant={selection == "Search" ? "default" : "outline"}
-          className="rounded-none border"
-          onClick={() => handleOnToggle("Search")}
-        >
-          <Search />
-        </Button>
-        <Button
-          variant={selection == "Table" ? "default" : "outline"}
-          className="rounded-none border"
-          onClick={() => handleOnToggle("Table")}
-        >
-          <Table />
+        <Input value="100%" className="w-[60px] text-right" />
+        <Button variant="ghost" className="rounded-none">
+          <Minus />
         </Button>
       </div>
-    </section>
+      <div className="flex items-center gap-x-2 border-r pr-2">
+        <Button variant="ghost">
+          <Bold />
+        </Button>
+        <Button variant="ghost">
+          <Italic />
+        </Button>
+        <Button variant="ghost">
+          <Underline />
+        </Button>
+      </div>
+      <div className="flex items-center gap-x-2 border-r pr-2">
+        <Button variant="ghost">
+          <AlignLeft />
+        </Button>
+        <Button variant="ghost">
+          <AlignCenter />
+        </Button>
+        <Button variant="ghost">
+          <AlignRight />
+        </Button>
+      </div>
+      <div className="flex items-center gap-x-2 pr-2">
+        <Button variant="ghost">
+          <ImageIcon />
+        </Button>
+        <Button variant="ghost">
+          <Table />
+        </Button>
+        <Button variant="ghost">
+          <Quote />
+        </Button>
+      </div>
+    </div>
   );
 }
