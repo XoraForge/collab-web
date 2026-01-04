@@ -14,6 +14,10 @@ pnpm dev
 bun dev
 ```
 
+> ⚠️ **Git hooks:** This repo installs Git hooks via Husky. After cloning, run `npm install` (which runs `prepare`) to set up hooks.
+>
+> The repository includes `post-merge` and `post-checkout` hooks that automatically run `npm install --legacy-peer-deps` when you perform `git pull` or `git switch`, ensuring dependencies (including legacy peer deps) are installed.
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

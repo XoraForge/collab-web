@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "prepare": "husky",
+    "prepare": "husky install",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "lint-staged": {
