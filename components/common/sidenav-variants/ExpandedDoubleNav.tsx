@@ -164,21 +164,21 @@ export default function ExpandedDoubleNav({
         </SideNavDropdown>
         <SideNavDropdown title="Files" noSetter={true}>
           <NavigationLink
-            href="/dashboard/test"
+            href={`/dashboard/project/${pageId}/files/${pageId}.docx`}
             icon="icon-park-outline:word"
             title="Word"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
           />
           <NavigationLink
-            href="/dashboard/chat"
+            href={`/dashboard/project/${pageId}/files/${pageId}.xlsx`}
             icon="icon-park-outline:excel-one"
             title="Excel"
             isExpanded={false}
             handleExpandedToggle={handleExpandedTrue}
           />
           <NavigationLink
-            href="/dashboard/chat"
+            href={`/dashboard/project/${pageId}/files/${pageId}.pptx`}
             icon="icon-park-outline:powerpoint"
             title="PowerPoint"
             isExpanded={false}
