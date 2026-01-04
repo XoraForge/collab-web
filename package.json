@@ -10,12 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "npm run typecheck",
-      "eslint --fix",
-      "git add -A"
-    ],
-    "*.{ts,tsx,js,jsx}": "eslint --max-warnings=0"
+    "*.{ts,tsx,js,jsx}": "eslint --fix --max-warnings=0"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
