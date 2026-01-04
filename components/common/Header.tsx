@@ -3,8 +3,10 @@ import Icon from "../ui/icon";
 import User from "./User";
 import NavigationTab from "../header-tabs/NavigationTab";
 import Link from "next/link";
+import { useSidebarContext } from "@/lib/SidebarContext";
 
 export default function Header() {
+  const { setIsSidebarVisible } = useSidebarContext();
   return (
     <div className="w-full flex items-center justify-between px-6 py-3 bg-(--default-sidebar) border border-border">
       <div className="flex w-full items-center gap-x-4">
@@ -12,7 +14,7 @@ export default function Header() {
         <div className="flex gap-x-3 pr-5 border-r border-border text-text">
           <ChevronLeft />
           <ChevronRight className="opacity-50 hover:opacity-100 transition-opacity duration-200" />
-          <Link href="/dashboard">
+          <Link href="/dashboard" onClick={() => setIsSidebarVisible(true)}>
             <Home />
           </Link>
         </div>
