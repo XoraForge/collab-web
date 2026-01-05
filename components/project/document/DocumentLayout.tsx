@@ -7,7 +7,7 @@ import AdjustableSections from "./layout/AdjustableSections";
 import Icon from "@/components/ui/icon";
 import { useEffect } from "react";
 import { useSidebarContext } from "@/lib/SidebarContext";
-import { Settings } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 
 export default function DocumentLayout() {
   const { setIsSidebarVisible } = useSidebarContext();
@@ -33,7 +33,11 @@ export default function DocumentLayout() {
           </div>
         </div>
         <div className="flex flex-col gap-y-2 py-2 border-t">
-          <h1 className="text-xs font-medium">Sections</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-xs font-medium">Sections</h1>
+            <Plus className="size-3" />
+          </div>
+
           <AdjustableSections />
         </div>
       </div>
