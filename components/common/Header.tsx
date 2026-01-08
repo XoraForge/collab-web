@@ -1,9 +1,9 @@
-import { ChevronLeft, ChevronRight, Home, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home } from "lucide-react";
 import Icon from "../ui/icon";
 import User from "./User";
-import NavigationTab from "../header-tabs/NavigationTab";
 import Link from "next/link";
 import { useSidebarContext } from "@/lib/SidebarContext";
+import HeaderTabs from "./HeaderTabs";
 
 export default function Header() {
   const { setIsSidebarVisible } = useSidebarContext();
@@ -19,16 +19,7 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Tabs */}
-        <div className="flex w-full gap-x-1">
-          <NavigationTab title="[ICT374] Business Analytics" />
-          <NavigationTab title="[ICT352] Artificial Intelligence" />
-
-          {/* Add new project button */}
-          <div className="flex items-center w-fit p-2 cursor-pointer hover:bg-border rounded-sm">
-            <Plus size={15} />
-          </div>
-        </div>
+        <HeaderTabs />
       </div>
 
       {/* User & Notifications */}
