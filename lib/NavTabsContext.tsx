@@ -11,7 +11,7 @@ export type NavTabsType = {
 export type ProviderProps = {
   navTabs: NavTabsType[];
   handleCreateTabs: (props: NavTabsType) => void;
-  handleDeleteTabs: (props: NavTabsType) => void;
+  handleDeleteTabs: (props: string) => void;
 };
 
 export const InitialNavTabs = [
@@ -45,8 +45,8 @@ export default function NavTabsContextProvider({
     );
   }
 
-  function handleDeleteTabs(props: NavTabsType) {
-    setNavTabs((prev) => prev.filter((value) => value.url !== props.url));
+  function handleDeleteTabs(url: string) {
+    setNavTabs((prev) => prev.filter((value) => value.url !== url));
   }
 
   return (
