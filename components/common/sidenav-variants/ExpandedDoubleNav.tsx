@@ -148,7 +148,7 @@ export default function ExpandedDoubleNav({
             handleExpandedToggle={handleExpandedTrue}
           />
           <NavigationLink
-            href={`/dashboard/project/${pageId}/activities`}
+            href={`/dashboard/project/${pageId}/schedules`}
             icon="grommet-icons:schedule-new"
             title="Schedules"
             isExpanded={false}
