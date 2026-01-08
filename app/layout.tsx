@@ -5,6 +5,7 @@ import DialogLayout from "@/components/dialog/DialogLayout";
 import DialogContextProvider from "@/lib/DialogContext";
 import ProjectContextProvider from "@/lib/CurrentProjectContext";
 import SidebarProvider from "@/lib/SidebarContext";
+import NavTabsContextProvider from "@/lib/NavTabsContext";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -27,14 +28,16 @@ export default function RootLayout({
       <body
         className={`${openSans.variable} min-h-screen max-w-svw antialiased dark relative`}
       >
-        <SidebarProvider>
-          <ProjectContextProvider>
-            <DialogContextProvider>
-              {children}
-              <DialogLayout />
-            </DialogContextProvider>
-          </ProjectContextProvider>
-        </SidebarProvider>
+        <NavTabsContextProvider>
+          <SidebarProvider>
+            <ProjectContextProvider>
+              <DialogContextProvider>
+                {children}
+                <DialogLayout />
+              </DialogContextProvider>
+            </ProjectContextProvider>
+          </SidebarProvider>
+        </NavTabsContextProvider>
       </body>
     </html>
   );
