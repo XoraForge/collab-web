@@ -6,19 +6,13 @@ export default function ActivityDetail({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-y-2">
-      <div className="flex items-center gap-x-2">
-        <div className="size-6 relative overflow-hidden inline-block">
-          <Image
-            src="/testimage.png"
-            fill
-            className="object-cover"
-            alt="user"
-          />
-        </div>
-        <p className="text-sm font-medium">Alex Hunter</p>
-      </div>
-      <p className="text-sm">{children}</p>
-    </div>
+    <p className="text-sm leading-normal">
+      <span className="inline-block size-6 relative overflow-hidden align-middle mr-2">
+        <Image src="/testimage.png" fill className="object-cover" alt="user" />
+      </span>
+
+      <span className="font-medium">Alex Hunter </span>
+      {children}
+    </p>
   );
 }
