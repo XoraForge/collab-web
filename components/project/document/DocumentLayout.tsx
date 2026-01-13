@@ -8,13 +8,13 @@ import Icon from "@/components/ui/icon";
 import { useEffect } from "react";
 import { useSidebarContext } from "@/lib/SidebarContext";
 import { Plus, Settings } from "lucide-react";
-
+import { buildDocxFromHtmlAndDownload } from "./tools/docxExporter";
 export default function DocumentLayout() {
   const { setIsSidebarVisible } = useSidebarContext();
 
   useEffect(() => {
     setIsSidebarVisible(false);
-  }, []);
+  }, [setIsSidebarVisible]);
 
   return (
     <div className="grid grid-cols-16 size-full">
@@ -43,7 +43,19 @@ export default function DocumentLayout() {
       </div>
       {/* Column 2: Body (12) */}
       <div className="col-span-12 border flex flex-col relative">
-        <MainHeader />
+        <MainHeader
+          onExport={() => {
+            const editor = document.getElementById("a4-editor");
+            if (!editor) {
+              console.error(
+                "Export failed: editor element '#a4-editor' not found."
+              );
+              return;
+            }
+            const html = (editor as HTMLElement).innerHTML || "";
+            buildDocxFromHtmlAndDownload(html, "document.docx");
+          }}
+        />
 
         <div className="h-full flex flex-col flex-1">
           <Document />

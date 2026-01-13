@@ -27,7 +27,10 @@ export default function A4() {
   }
 
   return (
-    <div className="w-[210mm] h-[297mm] bg-white dark:bg-[#2c2c2c] shadow-lg p-[25mm]">
+    <div
+      id="a4-editor"
+      className="w-[210mm] h-[297mm] bg-white dark:bg-[#2c2c2c] shadow-lg p-[25mm]"
+    >
       <div className="w-full flex flex-col items-center relative">
         <div className="absolute left-0 -top-8">
           {currentParagraph.user && (
