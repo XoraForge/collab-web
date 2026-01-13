@@ -16,7 +16,6 @@ const initialState = {
 };
 
 export default function A4() {
-  const [currentSelection, setCurrentSelection] = useState<string>("");
   const [currentParagraph, setCurrentParagraph] =
     useState<EditorType>(initialState);
 
@@ -51,9 +50,7 @@ export default function A4() {
           className="w-full"
           handleAddText={handleAddText}
           value={currentParagraph.text}
-          setCurrentSelection={setCurrentSelection}
         />
-        {currentSelection}
       </div>
     </div>
   );
