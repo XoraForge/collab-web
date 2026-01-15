@@ -22,7 +22,6 @@ import {
 
 type Props = {
   onAddSection?: () => void;
-  onAddParagraph?: () => void;
   onUndo?: () => void;
   onRedo?: () => void;
   onExport?: () => void;
@@ -30,7 +29,6 @@ type Props = {
 
 export default function MainHeader({
   onAddSection,
-  onAddParagraph,
   onUndo,
   onRedo,
   onExport,
@@ -87,16 +85,6 @@ export default function MainHeader({
           <Plus />
         </Button>
         <Input value="100%" className="w-[60px] text-right" />
-        <Button
-          variant="ghost"
-          className="rounded-none"
-          onMouseDown={(e) => {
-            e.preventDefault();
-            if (onAddParagraph) onAddParagraph();
-          }}
-        >
-          <Plus />
-        </Button>
         <Button variant="ghost" className="rounded-none">
           <Minus />
         </Button>

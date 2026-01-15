@@ -45,15 +45,15 @@ export default function DocumentLayout() {
       <div className="col-span-12 border flex flex-col relative">
         <MainHeader
           onExport={() => {
-            const editor = document.getElementById("a4-editor");
+            const editor = document.getElementById("textbox");
             if (!editor) {
               console.error(
-                "Export failed: editor element '#a4-editor' not found."
+                "Export failed: editor element 'textbox' not found."
               );
               return;
             }
             const html = (editor as HTMLElement).innerHTML || "";
-            buildDocxFromHtmlAndDownload(html, "document.docx");
+            buildDocxFromHtmlAndDownload(html, "ICT374_Proposal.docx");
           }}
         />
 

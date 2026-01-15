@@ -28,6 +28,7 @@ export default function ParagraphEditor({
       suppressContentEditableWarning
       style={{ whiteSpace: "pre-wrap", outline: "none" }}
       onBlur={(e) => handleAddText(e.currentTarget.innerHTML)}
+      id="textbox"
     />
   );
 }
