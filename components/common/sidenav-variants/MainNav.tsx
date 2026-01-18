@@ -84,21 +84,6 @@ export default function MainNav({
               <ProjectCreationLink title="Create New Project" />
             </SideNavDropdown>
           </div>
-          {/* Recent Changes */}
-          <div>
-            <SideNavDropdown title="Recent" noSetter={true}>
-              <ProjectNavigationLink
-                href="/dashboard/project/ict374-business-analytics"
-                title="Business Analytics"
-                handleExpandedToggle={handleExpandedTrue}
-              />
-              <ProjectNavigationLink
-                href="/dashboard/project/ict352-artificial-intelligence"
-                title="Artificial Intelligence"
-                handleExpandedToggle={handleExpandedTrue}
-              />
-            </SideNavDropdown>
-          </div>
         </div>
       </div>
       <div className="flex flex-col gap-y-3 border-t pt-3">

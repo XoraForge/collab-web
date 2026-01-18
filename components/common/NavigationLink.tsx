@@ -22,7 +22,9 @@ export default function NavigationLink({
   const pathname = usePathname();
 
   const isSelected =
-    pathname === href ? "text-white bg-neutral-700 dark:bg-neutral-800" : "";
+    pathname === href
+      ? "text-black dark:text-white bg-neutral-700 dark:bg-neutral-800"
+      : "";
 
   return (
     <Link
