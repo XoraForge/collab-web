@@ -1,10 +1,7 @@
 import { Input } from "../ui/input";
 import Icon from "../ui/icon";
 import { useCallback, useState } from "react";
-import Image from "next/image";
 import Cropper from "react-easy-crop";
-import { Check, X } from "lucide-react";
-import { Button } from "../ui/button";
 import CropHelper from "./CropHelper";
 
 type Area = {

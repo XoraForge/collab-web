@@ -1,7 +1,12 @@
 import { AlertCircle, Check, X } from "lucide-react";
 import { Button } from "../ui/button";
+import { Dispatch, SetStateAction } from "react";
 
-export default function CropHelper({ setImageSrc }) {
+export default function CropHelper({
+  setImageSrc,
+}: {
+  setImageSrc: Dispatch<SetStateAction<string>>;
+}) {
   return (
     <>
       <div className="absolute top-2 left-2 z-10">
