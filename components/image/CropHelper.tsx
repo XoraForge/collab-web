@@ -1,7 +1,13 @@
 import { AlertCircle, Check, X } from "lucide-react";
 import { Button } from "../ui/button";
 
-export default function CropHelper({ setImageSrc }) {
+export default function CropHelper({
+  onConfirm,
+  onCancel,
+}: {
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
   return (
     <>
       <div className="absolute top-2 left-2 z-10">
@@ -12,10 +18,26 @@ export default function CropHelper({ setImageSrc }) {
       </div>
       <div className="absolute bottom-2 right-2 z-10">
         <div className="flex gap-x-3 items-center">
-          <Button variant="success">
+          <Button
+            type="button"
+            variant="success"
+            aria-label="Use cropped image"
+            onClick={(e) => {
+              e.preventDefault();
+              onConfirm();
+            }}
+          >
             <Check />
           </Button>
-          <Button variant="destructive" onClick={() => setImageSrc("")}>
+          <Button
+            type="button"
+            variant="destructive"
+            aria-label="Remove image"
+            onClick={(e) => {
+              e.preventDefault();
+              onCancel();
+            }}
+          >
             <X />
           </Button>
         </div>

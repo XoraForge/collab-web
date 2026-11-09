@@ -11,15 +11,34 @@ interface FieldsetProps {
   label: string;
   type: "input" | "dropdown" | "datepicker";
   selectItems?: SelectItemProps[];
+  value?: string;
+  setValue?: (value: string) => void;
+  setItems?: (value: string) => void;
+  date?: Date;
+  setDate?: (date: Date) => void;
 }
 
-export default function Fieldset({ label, type, selectItems }: FieldsetProps) {
+export default function Fieldset({
+  label,
+  type,
+  selectItems,
+  value,
+  setValue,
+  setItems,
+  date,
+  setDate,
+}: FieldsetProps) {
   return (
     <div className="flex flex-col gap-y-1.5 w-full">
       <p className="text-xs font-medium">{label}</p>
-      {type == "input" && <Input />}
+      {type == "input" && (
+        <Input
+          value={value}
+          onChange={(e) => setValue && setValue(e.target.value)}
+        />
+      )}
       {type == "dropdown" && (
-        <Select>
+        <Select onChange={(e) => setItems && setItems(e)}>
           {selectItems &&
             selectItems.length > 0 &&
             selectItems.map((data) => (
@@ -31,7 +50,12 @@ export default function Fieldset({ label, type, selectItems }: FieldsetProps) {
             ))}
         </Select>
       )}
-      {type == "datepicker" && <DatePicker />}
+      {type == "datepicker" && (
+        <DatePicker
+          date={date || new Date()}
+          setDate={(d) => setDate && setDate(d)}
+        />
+      )}
     </div>
   );
 }

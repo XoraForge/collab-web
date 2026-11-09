@@ -19,19 +19,21 @@ export default function SideNavDropdown({
   const showChildren = noSetter ? true : isOpen;
   return (
     <div className="flex flex-col">
-      <div
-        className={`flex justify-between items-center ${
-          !noSetter ? "cursor-pointer" : ""
-        }`}
-        onClick={() => !noSetter && setIsOpen && setIsOpen((prev) => !prev)}
-      >
-        <h3 className="text-[#00000070] dark:text-[#ffffff70] text-sm">
-          {title}
-        </h3>
-
-        {!noSetter &&
-          (isOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />)}
-      </div>
+      {noSetter ? (
+        <div className="flex justify-between items-center">
+          <h3 className="text-muted-text text-sm">{title}</h3>
+        </div>
+      ) : (
+        <button
+          type="button"
+          aria-expanded={isOpen}
+          className="flex justify-between items-center cursor-pointer text-left"
+          onClick={() => setIsOpen && setIsOpen((prev) => !prev)}
+        >
+          <h3 className="text-muted-text text-sm">{title}</h3>
+          {isOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+        </button>
+      )}
 
       {showChildren && (
         <div className="flex flex-col mt-2.5 gap-y-1.5">{children}</div>

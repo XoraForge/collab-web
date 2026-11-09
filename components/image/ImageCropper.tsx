@@ -1,45 +1,75 @@
 import { Input } from "../ui/input";
 import Icon from "../ui/icon";
-import { useCallback, useState } from "react";
-import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 import Cropper from "react-easy-crop";
-import { Check, X } from "lucide-react";
-import { Button } from "../ui/button";
+import { X } from "lucide-react";
 import CropHelper from "./CropHelper";
+import { Area, getCroppedImage } from "./cropImage";
 
-type Area = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
-export default function ImageCropper() {
+export default function ImageCropper({
+  onChange,
+}: {
+  /** Called with the cropped image as a PNG data URL, or "" when removed. */
+  onChange?: (dataUrl: string) => void;
+}) {
   const [imageSrc, setImageSrc] = useState("");
+  const [croppedImage, setCroppedImage] = useState("");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
+  // Free the object URL of the previous upload.
+  useEffect(() => {
+    return () => {
+      if (imageSrc) URL.revokeObjectURL(imageSrc);
+    };
+  }, [imageSrc]);
+
   const onCropComplete = useCallback((_: Area, croppedPixels: Area) => {
     setCroppedAreaPixels(croppedPixels);
   }, []);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
     if (!file) return;
 
-    const previewUrl = URL.createObjectURL(file);
-    setImageSrc(previewUrl);
+    setImageSrc(URL.createObjectURL(file));
+    setCroppedImage("");
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
   };
 
+  async function handleConfirm() {
+    if (!imageSrc || !croppedAreaPixels) return;
+    const dataUrl = await getCroppedImage(imageSrc, croppedAreaPixels);
+    setCroppedImage(dataUrl);
+    onChange?.(dataUrl);
+  }
+
+  function handleReset() {
+    setImageSrc("");
+    setCroppedImage("");
+    setCroppedAreaPixels(null);
+    onChange?.("");
+  }
+
+  const isCropping = imageSrc !== "" && croppedImage === "";
+
   return (
-    <label className="h-[150px] flex flex-col gap-y-2 justify-center items-center border-2 border-dashed rounded-md relative cursor-pointer">
-      {imageSrc != "" && <CropHelper setImageSrc={setImageSrc} />}
-      {imageSrc == "" ? (
+    <label className="h-[150px] flex flex-col gap-y-2 justify-center items-center border-2 border-dashed rounded-md relative cursor-pointer overflow-hidden">
+      {isCropping && (
+        <CropHelper onConfirm={handleConfirm} onCancel={handleReset} />
+      )}
+
+      {imageSrc === "" && (
         <>
           <Icon icon="proicons:photo" fontSize={35} />
           <p className="text-sm font-medium">Upload Project Profile Image</p>
         </>
-      ) : (
+      )}
+
+      {isCropping && (
         <>
           <Cropper
             image={imageSrc}
@@ -51,16 +81,40 @@ export default function ImageCropper() {
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
           />
-
-          {/* Optional dark overlay */}
           <div className="pointer-events-none absolute inset-0 border border-white/60" />
         </>
       )}
+
+      {croppedImage && (
+        <div className="flex flex-col items-center gap-y-2">
+          <div className="relative">
+            {/* eslint-disable-next-line @next/next/no-img-element -- local data URL preview */}
+            <img
+              src={croppedImage}
+              alt="Project profile preview"
+              className="size-16 rounded-md object-cover border border-border"
+            />
+            <button
+              type="button"
+              aria-label="Remove image"
+              onClick={(e) => {
+                e.preventDefault();
+                handleReset();
+              }}
+              className="absolute -top-2 -right-2 size-5 rounded-full bg-destructive text-white flex items-center justify-center hover:opacity-90"
+            >
+              <X size={12} />
+            </button>
+          </div>
+          <p className="text-xs font-medium opacity-70">Project image set</p>
+        </div>
+      )}
+
       <Input
         type="file"
         className="hidden"
         onChange={handleImageChange}
-        disabled={imageSrc != ""}
+        disabled={imageSrc !== ""}
         accept="image/*"
       />
     </label>

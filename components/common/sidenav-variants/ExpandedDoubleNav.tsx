@@ -4,10 +4,11 @@ import { useProjectContext } from "@/lib/CurrentProjectContext";
 import Logo from "../Logo";
 import NavigationLink from "../NavigationLink";
 import ProjectCreationLink from "../ProjectCreationLink";
-import ProjectNavigationLink from "../ProjectNavigationLink";
+import ProjectLinks from "../ProjectLinks";
 import SideNavDropdown from "../SideNavDropdown";
 import MiniProjectDetails from "../expanded-nav/MiniProjectDetails";
-import { useEffect, useState } from "react";
+import ProjectFiles from "../expanded-nav/ProjectFiles";
+import { useParams } from "next/navigation";
 
 interface SideNavProps {
   handleExpandedTrue: () => void;
@@ -18,12 +19,10 @@ export default function ExpandedDoubleNav({
   handleExpandedTrue,
   handleExpandedFalse,
 }: SideNavProps) {
-  const [pageId, setPageId] = useState("");
   const { name } = useProjectContext();
-
-  useEffect(() => {
-    setPageId(name.replaceAll(" ", "-").toLowerCase());
-  }, [name]);
+  const params = useParams<{ id?: string }>();
+  // Prefer the id in the URL; fall back to the project name as a slug.
+  const pageId = params.id ?? name.replaceAll(" ", "-").toLowerCase();
 
   return (
     <>
@@ -73,15 +72,7 @@ export default function ExpandedDoubleNav({
             </div>
             {/* Projects - All projects */}
             <div className="flex flex-col gap-y-2">
-              <ProjectNavigationLink
-                href="/dashboard/project/ict374-business-analytics"
-                title="Business Analytics"
-                isExpanded={true}
-                handleExpandedToggle={handleExpandedTrue}
-              />
-              <ProjectNavigationLink
-                href="/dashboard/project/ict352-artificial-intelligence"
-                title="Artificial Intelligence"
+              <ProjectLinks
                 isExpanded={true}
                 handleExpandedToggle={handleExpandedTrue}
               />
@@ -95,7 +86,7 @@ export default function ExpandedDoubleNav({
         <div className="flex flex-col gap-y-3 border-t pt-3">
           <NavigationLink
             href="/dashboard/plans"
-            title="plan"
+            title="Plans"
             isExpanded={true}
             className="px-1 py-1"
             icon="carbon:plan"
@@ -124,67 +115,54 @@ export default function ExpandedDoubleNav({
         {/* Project Information */}
         <MiniProjectDetails />
         <hr />
-        {/* Project Navigation */}
-        <SideNavDropdown title="Components" noSetter={true}>
-          <NavigationLink
-            href={`/dashboard/project/${pageId}/overview`}
-            icon="grommet-icons:overview"
-            title="Overview"
-            isExpanded={false}
-            handleExpandedToggle={handleExpandedTrue}
-          />
-          <NavigationLink
-            href={`/dashboard/project/${pageId}/assignments`}
-            icon="fa7-solid:tasks"
-            title="Assignments"
-            isExpanded={false}
-            handleExpandedToggle={handleExpandedTrue}
-          />
-          <NavigationLink
-            href={`/dashboard/project/${pageId}/team-members`}
-            icon="ri:team-fill"
-            title="Team Members"
-            isExpanded={false}
-            handleExpandedToggle={handleExpandedTrue}
-          />
-          <NavigationLink
-            href={`/dashboard/project/${pageId}/schedules`}
-            icon="grommet-icons:schedule-new"
-            title="Schedules"
-            isExpanded={false}
-            handleExpandedToggle={handleExpandedTrue}
-          />
-          <NavigationLink
-            href={`/dashboard/project/${pageId}/activities`}
-            icon="fluent:notepad-edit-16-regular"
-            title="Notes"
-            isExpanded={false}
-            handleExpandedToggle={handleExpandedTrue}
-          />
-        </SideNavDropdown>
-        <SideNavDropdown title="Files" noSetter={true}>
-          <NavigationLink
-            href={`/dashboard/project/${pageId}/files/${pageId}.docx`}
-            icon="icon-park-outline:word"
-            title="Word"
-            isExpanded={false}
-            handleExpandedToggle={handleExpandedTrue}
-          />
-          <NavigationLink
-            href={`/dashboard/project/${pageId}/files/${pageId}.xlsx`}
-            icon="icon-park-outline:excel-one"
-            title="Excel"
-            isExpanded={false}
-            handleExpandedToggle={handleExpandedTrue}
-          />
-          <NavigationLink
-            href={`/dashboard/project/${pageId}/files/${pageId}.pptx`}
-            icon="icon-park-outline:powerpoint"
-            title="PowerPoint"
-            isExpanded={false}
-            handleExpandedToggle={handleExpandedTrue}
-          />
-        </SideNavDropdown>
+        {/* Project Navigation (needs the project id to build its links) */}
+        {pageId && (
+          <>
+            <SideNavDropdown title="Components" noSetter={true}>
+              <NavigationLink
+                href={`/dashboard/project/${pageId}`}
+                icon="grommet-icons:overview"
+                title="Overview"
+                isExpanded={false}
+                handleExpandedToggle={handleExpandedTrue}
+              />
+              <NavigationLink
+                href={`/dashboard/project/${pageId}/assignments`}
+                icon="fa7-solid:tasks"
+                title="Tasks"
+                isExpanded={false}
+                handleExpandedToggle={handleExpandedTrue}
+              />
+              <NavigationLink
+                href={`/dashboard/project/${pageId}/team-members`}
+                icon="ri:team-fill"
+                title="Team Members"
+                isExpanded={false}
+                handleExpandedToggle={handleExpandedTrue}
+              />
+              <NavigationLink
+                href={`/dashboard/project/${pageId}/schedules`}
+                icon="grommet-icons:schedule-new"
+                title="Schedules"
+                isExpanded={false}
+                handleExpandedToggle={handleExpandedTrue}
+              />
+              <NavigationLink
+                href={`/dashboard/project/${pageId}/notes`}
+                icon="fluent:notepad-edit-16-regular"
+                title="Notes"
+                isExpanded={false}
+                handleExpandedToggle={handleExpandedTrue}
+              />
+            </SideNavDropdown>
+            <SideNavDropdown title="Files" noSetter={true}>
+              <ProjectFiles
+                projectId={pageId}
+                handleExpandedToggle={handleExpandedTrue}
+              />
+            </SideNavDropdown>
+          </>
+        )}
       </div>
     </>
   );

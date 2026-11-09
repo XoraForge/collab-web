@@ -1,5 +1,6 @@
 "use client";
 
+import * as Dialog from "@radix-ui/react-dialog";
 import { useDialogContext } from "@/lib/DialogContext";
 import { X } from "lucide-react";
 import InitProjectDialog from "./variants/InitProjectDialog";
@@ -7,22 +8,32 @@ import InitProjectDialog from "./variants/InitProjectDialog";
 export default function DialogLayout() {
   const { isDialogOpen, isDialogType, handleCloseDialog } = useDialogContext();
 
-  if (!isDialogOpen) return;
-
   return (
-    <div
-      className="absolute top-0 left-0 size-full bg-[#00000090] flex items-center justify-center z-50"
-      id="dialog"
-      onClick={(e) => e.target.id == "dialog" && handleCloseDialog()}
+    <Dialog.Root
+      open={isDialogOpen}
+      onOpenChange={(open) => !open && handleCloseDialog()}
     >
-      <div className="bg-[#2e2e2e] h-[600px] w-[500px] rounded-md border p-4">
-        {/* Dialog Exit */}
-        <div className="flex justify-end">
-          <X size={15} onClick={() => handleCloseDialog()} />
-        </div>
-        {/* Title & Children */}
-        {isDialogType == "projectCreation" && <InitProjectDialog />}
-      </div>
-    </div>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-overlay z-50 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+        <Dialog.Content
+          aria-describedby={undefined}
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-dialog min-h-[min(600px,calc(100svh-2rem))] max-h-[calc(100svh-2rem)] w-[500px] max-w-[calc(100vw-2rem)] rounded-md border p-4 overflow-y-auto small-scrollbar flex flex-col focus:outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+        >
+          {/* Dialog Exit */}
+          <div className="flex justify-end">
+            <Dialog.Close
+              aria-label="Close dialog"
+              className="rounded-sm opacity-70 hover:opacity-100 transition-opacity"
+            >
+              <X size={15} />
+            </Dialog.Close>
+          </div>
+          {/* Title & Children */}
+          {isDialogType == "projectCreation" && (
+            <InitProjectDialog handleCloseDialog={handleCloseDialog} />
+          )}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

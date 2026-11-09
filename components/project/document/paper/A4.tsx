@@ -1,59 +1,47 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import ParagraphEditor from "../tools/ParagraphEditor";
 import { UserCircle2 } from "lucide-react";
-import { useState } from "react";
 
-type EditorType = {
-  user: string[];
-  text: string;
-};
+export type PresenceUser = { name: string; color: string };
 
-const initialState = {
-  user: ["Jian Wei", "Wei Jian"],
-  text: "",
-};
-
-export default function A4() {
-  const [currentSelection, setCurrentSelection] = useState<string>("");
-  const [currentParagraph, setCurrentParagraph] =
-    useState<EditorType>(initialState);
-
-  function handleAddText(text: string) {
-    setCurrentParagraph((prev) => {
-      return { ...prev, text };
-    });
-  }
-
+/** An A4 sheet. `people` shows who is editing right now (above the page content). */
+export default function A4({
+  people = [],
+  onMarginClick,
+  children,
+}: {
+  people?: PresenceUser[];
+  onMarginClick?: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <div
       id="a4-editor"
-      className="w-[210mm] h-[297mm] bg-white dark:bg-[#2c2c2c] shadow-lg p-[25mm]"
+      className="w-[210mm] min-h-[297mm] h-fit shrink-0 bg-paper shadow-lg p-[25mm] cursor-text"
+      onClick={(e) => {
+        // Clicking the page margins focuses the end of the document, like Word.
+        if (e.target === e.currentTarget) onMarginClick?.();
+      }}
     >
       <div className="w-full flex flex-col items-center relative">
-        <div className="absolute left-0 -top-8">
-          {currentParagraph.user && (
+        {people.length > 0 && (
+          <div className="absolute left-0 -top-8">
             <div className="flex gap-x-2">
-              {currentParagraph.user.map((user) => (
+              {people.map((person, i) => (
                 <Badge
-                  className="bg-blue-100 dark:bg-blue-900 text-black dark:text-white"
-                  key={user}
+                  key={`${person.name}-${i}`}
+                  className="text-white"
+                  style={{ backgroundColor: person.color }}
                 >
                   <UserCircle2 />
-                  <p>{user}</p>
+                  <p>{person.name}</p>
                 </Badge>
               ))}
             </div>
-          )}
-        </div>
-        <ParagraphEditor
-          className="w-full"
-          handleAddText={handleAddText}
-          value={currentParagraph.text}
-          setCurrentSelection={setCurrentSelection}
-        />
-        {currentSelection}
+          </div>
+        )}
+        <div className="w-full">{children}</div>
       </div>
     </div>
   );
