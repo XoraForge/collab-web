@@ -1,5 +1,6 @@
-import React from "react";
+import TeamMembersPage from "@/components/dashboard/project/TeamMembersPage";
 
-export default function page() {
-  return <div>page</div>;
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <TeamMembersPage projectId={id} />;
 }

@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
 
 export default function RibbonAccordion({
   children,
@@ -23,17 +22,7 @@ export default function RibbonAccordion({
       </AccordionItem>
       <AccordionItem value="references">
         <AccordionTrigger>Reference</AccordionTrigger>
-        <AccordionContent className="flex flex-col gap-4 text-balance">
-          <p>
-            We offer worldwide shipping through trusted courier partners.
-            Standard delivery takes 3-5 business days, while express shipping
-            ensures delivery within 1-2 business days.
-          </p>
-          <p>
-            All orders are carefully packaged and fully insured. Track your
-            shipment in real-time through our dedicated tracking portal.
-          </p>
-        </AccordionContent>
+        <AccordionContent className="flex flex-col gap-4 text-balance" />
       </AccordionItem>
     </Accordion>
   );

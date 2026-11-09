@@ -8,8 +8,9 @@ export default function ChatPreview({
   selectChat: () => void;
 }) {
   return (
-    <div
-      className="flex border px-2 py-4 border-[#00000025] dark:text-white text-black justify-between cursor-pointer"
+    <button
+      type="button"
+      className="flex w-full text-left border px-2 py-4 border-[#00000025] dark:text-white text-black justify-between cursor-pointer hover:bg-hover transition-colors duration-200"
       onClick={selectChat}
     >
       <div className="flex gap-x-2">
@@ -23,6 +24,6 @@ export default function ChatPreview({
       </div>
       {/* DateTime */}
       <p className="text-[10px]">10:09AM</p>
-    </div>
+    </button>
   );
 }

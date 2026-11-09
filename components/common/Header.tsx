@@ -1,20 +1,41 @@
 import { ChevronLeft, ChevronRight, Home } from "lucide-react";
-import Icon from "../ui/icon";
 import User from "./User";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSidebarContext } from "@/lib/SidebarContext";
 import HeaderTabs from "./HeaderTabs";
+import HeaderActions from "./HeaderActions";
 
 export default function Header() {
   const { setIsSidebarVisible } = useSidebarContext();
+  const router = useRouter();
+
   return (
     <div className="w-full flex items-center justify-between px-6 py-3 bg-(--default-sidebar) border border-border">
       <div className="flex w-full items-center gap-x-4">
         {/* Navigation */}
         <div className="flex gap-x-3 pr-5 border-r border-border text-text">
-          <ChevronLeft />
-          <ChevronRight className="opacity-50 hover:opacity-100 transition-opacity duration-200" />
-          <Link href="/dashboard" onClick={() => setIsSidebarVisible(true)}>
+          <button
+            type="button"
+            aria-label="Go back"
+            onClick={() => router.back()}
+            className="opacity-50 hover:opacity-100 transition-opacity duration-200"
+          >
+            <ChevronLeft />
+          </button>
+          <button
+            type="button"
+            aria-label="Go forward"
+            onClick={() => router.forward()}
+            className="opacity-50 hover:opacity-100 transition-opacity duration-200"
+          >
+            <ChevronRight />
+          </button>
+          <Link
+            href="/dashboard"
+            aria-label="Dashboard home"
+            onClick={() => setIsSidebarVisible(true)}
+          >
             <Home />
           </Link>
         </div>
@@ -23,10 +44,8 @@ export default function Header() {
       </div>
 
       {/* User & Notifications */}
-      <div className="flex gap-x-5 items-center text-text)">
-        <Icon icon="nrk:latest-news" fontSize={22} />
-        <Icon icon="lets-icons:message-alt-fill" fontSize={20} />
-        <Icon icon="ion:notifications" fontSize={17} />
+      <div className="flex gap-x-3 items-center text-text">
+        <HeaderActions />
         <User />
       </div>
     </div>

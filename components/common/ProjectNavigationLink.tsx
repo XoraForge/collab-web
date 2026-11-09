@@ -25,20 +25,20 @@ export default function ProjectNavigationLink({
       onClick={handleExpandedToggle}
       className={`
         flex items-center gap-x-2
-        text-[#00000070] dark:text-[#ffffff70]
+        text-muted-text
         hover:text-black dark:hover:text-white
-        hover:bg-[#e5e5e5] dark:hover:bg-[#383838]
+        hover:bg-hover
         duration-200 ease-in-out
         px-1 py-1 rounded-sm
 
         ${
           isExpanded &&
-          "py-2.5 px-3.5 rounded-sm border border-[#d4d4d4] dark:border-[#404040] text-xs cursor-pointer"
+          "py-2.5 px-3.5 rounded-sm border border-divider text-xs cursor-pointer"
         }
 
         ${
           isActive &&
-          "text-black dark:text-white bg-[#e5e5e5] dark:bg-[#383838]"
+          "text-black dark:text-white bg-hover"
         }
 
         ${className}
@@ -49,7 +49,7 @@ export default function ProjectNavigationLink({
           text-xs
           ${
             !isExpanded &&
-            "py-1 px-2 rounded-sm border border-[#d4d4d4] dark:border-[#404040]"
+            "py-1 px-2 rounded-sm border border-divider"
           }
         `}
       >

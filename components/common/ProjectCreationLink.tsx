@@ -20,9 +20,9 @@ function DefButton({ handleOpenDialog, title }: DefButtonProps) {
       onClick={() => handleOpenDialog("projectCreation")}
       className="
         text-xs font-medium justify-start cursor-pointer
-        text-[#00000070] dark:text-[#ffffff70]
+        text-muted-text
         hover:text-black dark:hover:text-white
-        hover:bg-[#e5e5e5] dark:hover:bg-[#383838]
+        hover:bg-hover
         duration-200 ease-in-out
       "
     >
@@ -34,19 +34,23 @@ function DefButton({ handleOpenDialog, title }: DefButtonProps) {
 
 function ExpandedButton({ handleOpenDialog }: ExpandedButtonProps) {
   return (
-    <div
+    <button
+      type="button"
+      aria-label="Create new project"
+      title="Create new project"
       onClick={() => handleOpenDialog("projectCreation")}
       className="
+        flex items-center justify-center
         py-2.5 px-2.5 rounded-sm border text-xs cursor-pointer
-        text-[#00000070] dark:text-[#ffffff70]
-        border-[#d4d4d4] dark:border-[#404040]
+        text-muted-text
+        border-divider
         hover:text-black dark:hover:text-white
-        hover:bg-[#e5e5e5] dark:hover:bg-[#383838]
+        hover:bg-hover
         duration-200 ease-in-out
       "
     >
       <Plus size={15} />
-    </div>
+    </button>
   );
 }
 

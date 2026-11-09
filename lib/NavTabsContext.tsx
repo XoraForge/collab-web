@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 export type NavTabsType = {
   title?: string;
@@ -39,15 +39,16 @@ export default function NavTabsContextProvider({
 }) {
   const [navTabs, setNavTabs] = useState<NavTabsType[]>(InitialNavTabs);
 
-  function handleCreateTabs(props: NavTabsType) {
+  // Stable references so consumers can safely list them as effect deps.
+  const handleCreateTabs = useCallback((props: NavTabsType) => {
     setNavTabs((prev) =>
       prev.find((val) => val.url === props.url) ? prev : [...prev, props]
     );
-  }
+  }, []);
 
-  function handleDeleteTabs(url: string) {
+  const handleDeleteTabs = useCallback((url: string) => {
     setNavTabs((prev) => prev.filter((value) => value.url !== url));
-  }
+  }, []);
 
   return (
     <NavTabContext.Provider

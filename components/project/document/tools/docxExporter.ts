@@ -1,330 +1,388 @@
-import { parseParagraphHtml } from "./htmlSerializer";
-import { Text } from "../model/node/Text";
+import type { JSONContent } from "@tiptap/react";
+import {
+  AlignmentType,
+  BorderStyle,
+  Document,
+  ExternalHyperlink,
+  HeadingLevel,
+  ImageRun,
+  LevelFormat,
+  Packer,
+  PageBreak,
+  Paragraph,
+  ParagraphChild,
+  Table,
+  TableCell,
+  TableOfContents,
+  TableRow,
+  TextRun,
+  WidthType,
+} from "docx";
+import type { SectionKind } from "@/lib/api/types";
+import { DEFAULT_FONT_SIZE } from "../editor/extensions";
 
-import { Document as DocModel } from "../model/node/Document";
-import { Style } from "../model/node/Style";
+/**
+ * Converts a TipTap document (editor.getJSON()) into a .docx file.
+ *
+ * Supported: paragraphs, headings 1–3, bold/italic/underline/strike/code,
+ * font family/size/colour, links, alignment, bullet & numbered lists (nested),
+ * blockquotes, code blocks, horizontal rules, tables and images.
+ */
 
-function xmlEscape(str: string) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
+const ORDERED_LIST_REF = "collab-ordered-list";
+/** Usable width of an A4 page with the editor's 25mm margins, in px @96dpi. */
+const MAX_IMAGE_WIDTH = 605;
+
+type Block = Paragraph | Table | TableOfContents;
+
+/** One document section, in order, for export. */
+export type DocxSection = {
+  kind: SectionKind;
+  /** Published content; null = nothing published (skipped). */
+  content: JSONContent | null;
+  pageBreakBefore: boolean;
+};
+
+type Context = {
+  /** Nesting depth for lists (0-based). */
+  listLevel: number;
+  listType?: "bullet" | "ordered";
+  inQuote: boolean;
+  inCode: boolean;
+};
+
+const BASE_CONTEXT: Context = { listLevel: 0, inQuote: false, inCode: false };
+
+const ALIGNMENT = {
+  left: AlignmentType.LEFT,
+  center: AlignmentType.CENTER,
+  right: AlignmentType.RIGHT,
+  justify: AlignmentType.JUSTIFIED,
+} as const;
+
+const HEADINGS = {
+  1: HeadingLevel.HEADING_1,
+  2: HeadingLevel.HEADING_2,
+  3: HeadingLevel.HEADING_3,
+} as const;
+
+/** "12pt" / "16px" → docx half-points. */
+function toHalfPoints(fontSize: unknown): number | undefined {
+  if (typeof fontSize !== "string") return undefined;
+  const value = parseFloat(fontSize);
+  if (Number.isNaN(value)) return undefined;
+  const points = fontSize.endsWith("px") ? value * 0.75 : value;
+  return Math.round(points * 2);
 }
 
-function buildDocumentXmlFromTextNodes(nodes: Text[]) {
-  const wNS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-  // Build simple paragraphs by splitting on newline characters
-  // We'll combine runs with same styles
-  const paragraphs: string[] = [];
+/** '"Times New Roman", serif' → 'Times New Roman' */
+function firstFontName(fontFamily: unknown): string | undefined {
+  if (typeof fontFamily !== "string" || !fontFamily) return undefined;
+  return fontFamily.split(",")[0].trim().replace(/^["']|["']$/g, "");
+}
 
-  // Collapse nodes into paragraphs by splitting on \n
-  let currentRuns: {
-    text: string;
-    style: { bold: boolean; italic: boolean; underline: boolean };
-  }[] = [];
-
-  function pushParagraph() {
-    if (currentRuns.length === 0) return;
-    const runsXml = currentRuns
-      .map((r) => {
-        const rPr: string[] = [];
-        if (r.style.bold) rPr.push("<w:b/>");
-        if (r.style.italic) rPr.push("<w:i/>");
-        if (r.style.underline) rPr.push('<w:u w:val="single"/>');
-        const rPrXml = rPr.length > 0 ? `<w:rPr>${rPr.join("")}</w:rPr>` : "";
-        // preserve spaces
-        const t = xmlEscape(r.text);
-        return `<w:r>${rPrXml}<w:t xml:space=\"preserve\">${t}</w:t></w:r>`;
-      })
-      .join("");
-
-    paragraphs.push(`<w:p>${runsXml}</w:p>`);
-    currentRuns = [];
+/** "#ff0000" / "rgb(255, 0, 0)" → "FF0000" */
+function toHexColor(color: unknown): string | undefined {
+  if (typeof color !== "string") return undefined;
+  if (color.startsWith("#")) {
+    const hex = color.slice(1);
+    return (hex.length === 3 ? hex.replace(/./g, "$&$&") : hex.slice(0, 6))
+      .toUpperCase();
   }
+  const rgb = color.match(/\d+/g);
+  if (color.startsWith("rgb") && rgb && rgb.length >= 3) {
+    return rgb
+      .slice(0, 3)
+      .map((n) => Number(n).toString(16).padStart(2, "0"))
+      .join("")
+      .toUpperCase();
+  }
+  return undefined;
+}
 
-  nodes.forEach((n) => {
-    const style =
-      n.style && n.style[0]
-        ? n.style[0]
-        : { bold: false, italic: false, underline: false };
-    const parts = n.text.split("\n");
-    parts.forEach((part, idx) => {
-      if (part.length > 0) {
-        // merge with previous run if same style
-        const last = currentRuns[currentRuns.length - 1];
-        if (
-          last &&
-          last.style.bold === style.bold &&
-          last.style.italic === style.italic &&
-          last.style.underline === style.underline
-        ) {
-          last.text += part;
-        } else {
-          currentRuns.push({ text: part, style });
-        }
-      }
+function textRun(node: JSONContent, ctx: Context): TextRun {
+  const marks = node.marks ?? [];
+  const has = (type: string) => marks.some((m) => m.type === type);
+  const style = marks.find((m) => m.type === "textStyle")?.attrs ?? {};
+  const isCode = ctx.inCode || has("code");
 
-      if (idx < parts.length - 1) {
-        // newline -> end paragraph
-        pushParagraph();
-      }
-    });
+  return new TextRun({
+    text: node.text ?? "",
+    bold: has("bold") || undefined,
+    italics: has("italic") || ctx.inQuote || undefined,
+    underline: has("underline") || has("link") ? {} : undefined,
+    strike: has("strike") || undefined,
+    font: isCode ? "Courier New" : firstFontName(style.fontFamily),
+    size: toHalfPoints(style.fontSize),
+    color: has("link") ? "0563C1" : toHexColor(style.color),
   });
-
-  pushParagraph();
-
-  const body = paragraphs.join("");
-
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:document xmlns:w=\"${wNS}\"><w:body>${body}</w:body></w:document>`;
 }
 
-// Minimal static files
-const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">
-  <Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>
-  <Default Extension=\"xml\" ContentType=\"application/xml\"/>
-  <Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>
-  <Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>
-</Types>`;
-
-const relsRoot = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\n  <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/>\n</Relationships>`;
-
-const relsDocument = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\n</Relationships>`;
-
-const stylesXml = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<w:styles xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\n  <w:style w:type=\"paragraph\" w:default=\"1\">\n    <w:name w:val=\"Normal\"/>\n    <w:rPr>\n      <w:rFonts w:ascii=\"Times New Roman\"/>\n      <w:sz w:val=\"24\"/>\n    </w:rPr>\n  </w:style>\n</w:styles>`;
-
-// Encode string to Uint8Array (UTF-8)
-function encodeUtf8(s: string) {
-  return new TextEncoder().encode(s);
-}
-
-// CRC32 implementation
-const CRC_TABLE = (() => {
-  let c;
-  const table = new Uint32Array(256);
-  for (let n = 0; n < 256; n++) {
-    c = n;
-    for (let k = 0; k < 8; k++) {
-      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+function inlineChildren(
+  nodes: JSONContent[] | undefined,
+  ctx: Context
+): ParagraphChild[] {
+  const children: ParagraphChild[] = [];
+  for (const node of nodes ?? []) {
+    if (node.type === "hardBreak") {
+      children.push(new TextRun({ text: "", break: 1 }));
+    } else if (node.type === "text" && ctx.inCode && node.text?.includes("\n")) {
+      // Code blocks keep line breaks as "\n" inside a single text node.
+      node.text.split("\n").forEach((line, i) => {
+        if (i > 0) children.push(new TextRun({ text: "", break: 1 }));
+        children.push(textRun({ ...node, text: line }, ctx));
+      });
+    } else if (node.type === "text") {
+      const link = node.marks?.find((m) => m.type === "link");
+      const run = textRun(node, ctx);
+      children.push(
+        link?.attrs?.href
+          ? new ExternalHyperlink({ link: link.attrs.href, children: [run] })
+          : run
+      );
     }
-    table[n] = c >>> 0;
   }
-  return table;
-})();
+  return children;
+}
 
-function crc32(bytes: Uint8Array) {
-  let crc = 0xffffffff;
-  for (let i = 0; i < bytes.length; i++) {
-    crc = (crc >>> 8) ^ CRC_TABLE[(crc ^ bytes[i]) & 0xff];
+function paragraph(
+  node: JSONContent,
+  ctx: Context,
+  extra: { heading?: (typeof HEADINGS)[keyof typeof HEADINGS] } = {}
+): Paragraph {
+  const align = node.attrs?.textAlign as keyof typeof ALIGNMENT | undefined;
+  return new Paragraph({
+    children: inlineChildren(node.content, ctx),
+    heading: extra.heading,
+    alignment: align ? ALIGNMENT[align] : undefined,
+    bullet:
+      ctx.listType === "bullet" ? { level: ctx.listLevel } : undefined,
+    numbering:
+      ctx.listType === "ordered"
+        ? { reference: ORDERED_LIST_REF, level: ctx.listLevel }
+        : undefined,
+    indent: ctx.inQuote ? { left: 567 } : undefined,
+    border: ctx.inQuote
+      ? {
+          left: { style: BorderStyle.SINGLE, size: 12, color: "A3A3A3", space: 8 },
+        }
+      : undefined,
+  });
+}
+
+async function imageParagraph(node: JSONContent): Promise<Paragraph | null> {
+  const src = node.attrs?.src as string | undefined;
+  if (!src) return null;
+
+  try {
+    const blob = await (await fetch(src)).blob();
+    const type = blob.type.includes("png")
+      ? "png"
+      : blob.type.includes("gif")
+      ? "gif"
+      : blob.type.includes("jpeg") || blob.type.includes("jpg")
+      ? "jpg"
+      : null;
+    if (!type) return null; // docx only supports png/jpg/gif/bmp here
+
+    const bitmap = await createImageBitmap(blob);
+    const scale = Math.min(1, MAX_IMAGE_WIDTH / bitmap.width);
+    const transformation = {
+      width: Math.round(bitmap.width * scale),
+      height: Math.round(bitmap.height * scale),
+    };
+    bitmap.close();
+
+    return new Paragraph({
+      children: [
+        new ImageRun({
+          type,
+          data: new Uint8Array(await blob.arrayBuffer()),
+          transformation,
+          altText: node.attrs?.alt
+            ? { name: node.attrs.alt, description: node.attrs.alt, title: node.attrs.alt }
+            : undefined,
+        }),
+      ],
+    });
+  } catch (err) {
+    console.warn("Skipping image that couldn't be exported", err);
+    return null;
   }
-  return (crc ^ 0xffffffff) >>> 0;
 }
 
-function uint32LE(n: number) {
-  const b = new Uint8Array(4);
-  b[0] = n & 0xff;
-  b[1] = (n >>> 8) & 0xff;
-  b[2] = (n >>> 16) & 0xff;
-  b[3] = (n >>> 24) & 0xff;
-  return b;
-}
+async function table(node: JSONContent): Promise<Table> {
+  const rows = await Promise.all(
+    (node.content ?? []).map(async (row) => {
+      const cells = await Promise.all(
+        (row.content ?? []).map(async (cell) => {
+          const blocks = await convertBlocks(cell.content, BASE_CONTEXT);
+          const isHeader = cell.type === "tableHeader";
+          return new TableCell({
+            children: blocks.length
+              ? blocks.filter((b): b is Paragraph | Table => !(b instanceof TableOfContents))
+              : [new Paragraph("")],
+            columnSpan: cell.attrs?.colspan ?? undefined,
+            rowSpan: cell.attrs?.rowspan ?? undefined,
+            shading: isHeader ? { fill: "F2F2F2" } : undefined,
+          });
+        })
+      );
+      return new TableRow({ children: cells });
+    })
+  );
 
-function uint16LE(n: number) {
-  const b = new Uint8Array(2);
-  b[0] = n & 0xff;
-  b[1] = (n >>> 8) & 0xff;
-  return b;
-}
-
-function concatUint8(arrays: Uint8Array[]) {
-  const total = arrays.reduce((s, a) => s + a.length, 0);
-  const out = new Uint8Array(total);
-  let offset = 0;
-  arrays.forEach((a) => {
-    out.set(a, offset);
-    offset += a.length;
+  return new Table({
+    rows,
+    width: { size: 100, type: WidthType.PERCENTAGE },
   });
-  return out;
 }
 
-function createZip(files: { [path: string]: Uint8Array }) {
-  const localParts: Uint8Array[] = [];
-  const centralParts: Uint8Array[] = [];
-  let offset = 0;
+async function convertBlocks(
+  nodes: JSONContent[] | undefined,
+  ctx: Context
+): Promise<Block[]> {
+  const blocks: Block[] = [];
 
-  Object.keys(files).forEach((path) => {
-    const nameBytes = encodeUtf8(path);
-    const data = files[path];
-    const crc = crc32(data);
-    const size = data.length;
+  for (const node of nodes ?? []) {
+    switch (node.type) {
+      case "paragraph":
+        blocks.push(paragraph(node, ctx));
+        break;
 
-    // local header
-    const localHeaderSig = uint32LE(0x04034b50);
-    const versionNeeded = uint16LE(20);
-    const flags = uint16LE(0);
-    const method = uint16LE(0); // store
-    const modTime = uint16LE(0);
-    const modDate = uint16LE(0);
-    const crcBytes = uint32LE(crc);
-    const compSize = uint32LE(size);
-    const uncompSize = uint32LE(size);
-    const nameLen = uint16LE(nameBytes.length);
-    const extraLen = uint16LE(0);
+      case "heading": {
+        const level = (node.attrs?.level ?? 1) as keyof typeof HEADINGS;
+        blocks.push(paragraph(node, ctx, { heading: HEADINGS[level] }));
+        break;
+      }
 
-    const localHeader = concatUint8([
-      localHeaderSig,
-      versionNeeded,
-      flags,
-      method,
-      modTime,
-      modDate,
-      crcBytes,
-      compSize,
-      uncompSize,
-      nameLen,
-      extraLen,
-      nameBytes,
-      data,
-    ]);
+      case "bulletList":
+      case "orderedList": {
+        const listType = node.type === "bulletList" ? "bullet" : "ordered";
+        const isNested = ctx.listType !== undefined;
+        for (const item of node.content ?? []) {
+          blocks.push(
+            ...(await convertBlocks(item.content, {
+              ...ctx,
+              listType,
+              listLevel: isNested ? ctx.listLevel + 1 : 0,
+            }))
+          );
+        }
+        break;
+      }
 
-    localParts.push(localHeader);
+      case "blockquote":
+        blocks.push(...(await convertBlocks(node.content, { ...ctx, inQuote: true })));
+        break;
 
-    // central header
-    const centralSig = uint32LE(0x02014b50);
-    const verMade = uint16LE(20);
-    const verNeed = versionNeeded;
-    const gp = flags;
-    const method2 = method;
-    const mt = modTime;
-    const md = modDate;
-    const crc2 = crcBytes;
-    const cs = compSize;
-    const us = uncompSize;
-    const nl = nameLen;
-    const el = extraLen;
-    const commentLen = uint16LE(0);
-    const diskStart = uint16LE(0);
-    const intAttr = uint16LE(0);
-    const extAttr = uint32LE(0);
-    const relOffset = uint32LE(offset);
+      case "codeBlock":
+        blocks.push(paragraph(node, { ...ctx, inCode: true }));
+        break;
 
-    const central = concatUint8([
-      centralSig,
-      verMade,
-      verNeed,
-      gp,
-      method2,
-      mt,
-      md,
-      crc2,
-      cs,
-      us,
-      nl,
-      el,
-      commentLen,
-      diskStart,
-      intAttr,
-      extAttr,
-      relOffset,
-      nameBytes,
-    ]);
+      case "horizontalRule":
+        blocks.push(
+          new Paragraph({
+            children: [],
+            border: {
+              bottom: { style: BorderStyle.SINGLE, size: 6, color: "A3A3A3", space: 1 },
+            },
+          })
+        );
+        break;
 
-    centralParts.push(central);
+      case "image": {
+        const image = await imageParagraph(node);
+        if (image) blocks.push(image);
+        break;
+      }
 
-    offset += localHeader.length;
-  });
+      case "table":
+        blocks.push(await table(node));
+        // Word merges back-to-back tables; keep them apart.
+        blocks.push(new Paragraph(""));
+        break;
 
-  const centralDir = concatUint8(centralParts);
-  const centralSize = centralDir.length;
-  const centralOffset = offset;
+      default:
+        // Unknown block: export whatever it contains.
+        if (node.content) blocks.push(...(await convertBlocks(node.content, ctx)));
+    }
+  }
 
-  const endSig = uint32LE(0x06054b50);
-  const disk = uint16LE(0);
-  const diskStart = uint16LE(0);
-  const recordsOnDisk = uint16LE(centralParts.length);
-  const totalRecords = uint16LE(centralParts.length);
-  const cdSize = uint32LE(centralSize);
-  const cdOffset = uint32LE(centralOffset);
-  const commentLen = uint16LE(0);
-
-  const end = concatUint8([
-    endSig,
-    disk,
-    diskStart,
-    recordsOnDisk,
-    totalRecords,
-    cdSize,
-    cdOffset,
-    commentLen,
-  ]);
-
-  return concatUint8([...localParts, centralDir, end]);
+  return blocks;
 }
 
-export function buildDocxFromTextNodesAndDownload(
-  nodes: Text[],
-  filename = "document.docx"
-) {
-  // Build XML files
-  const documentXml = buildDocumentXmlFromTextNodes(nodes);
+export async function buildDocx(sections: DocxSection[]): Promise<Blob> {
+  const children: Block[] = [];
 
-  const files: { [path: string]: Uint8Array } = {
-    "[Content_Types].xml": encodeUtf8(contentTypes),
-    "_rels/.rels": encodeUtf8(relsRoot),
-    "word/document.xml": encodeUtf8(documentXml),
-    "word/_rels/document.xml.rels": encodeUtf8(relsDocument),
-    "word/styles.xml": encodeUtf8(stylesXml),
-  };
+  for (const section of sections) {
+    const isToc = section.kind === "TABLE_OF_CONTENTS";
+    if (!isToc && !section.content?.content?.length) continue; // nothing published
 
-  const zipBytes = createZip(files);
-  const blob = new Blob([zipBytes], {
-    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    if (children.length > 0 && section.pageBreakBefore) {
+      children.push(new Paragraph({ children: [new PageBreak()] }));
+    }
+
+    if (isToc) {
+      // A real Word TOC field: Word fills in entries and page numbers when the file opens.
+      children.push(new Paragraph({ text: "Table of Contents", heading: HeadingLevel.HEADING_1 }));
+      children.push(new TableOfContents("Table of Contents", { hyperlink: true, headingStyleRange: "1-3" }));
+    } else {
+      children.push(...(await convertBlocks(section.content!.content, BASE_CONTEXT)));
+    }
+  }
+
+  const document = new Document({
+    // Ask Word to fill in the table of contents (page numbers) on open.
+    features: { updateFields: sections.some((s) => s.kind === "TABLE_OF_CONTENTS") },
+    styles: {
+      default: {
+        document: { run: { size: DEFAULT_FONT_SIZE * 2 } },
+      },
+    },
+    numbering: {
+      config: [
+        {
+          reference: ORDERED_LIST_REF,
+          levels: [0, 1, 2, 3, 4, 5].map((level) => ({
+            level,
+            format: [LevelFormat.DECIMAL, LevelFormat.LOWER_LETTER, LevelFormat.LOWER_ROMAN][
+              level % 3
+            ],
+            text: `%${level + 1}.`,
+            alignment: AlignmentType.START,
+            style: {
+              paragraph: { indent: { left: 720 * (level + 1), hanging: 360 } },
+            },
+          })),
+        },
+      ],
+    },
+    sections: [
+      {
+        properties: {
+          page: {
+            // A4 with 25mm margins, matching the on-screen page.
+            size: { width: 11906, height: 16838 },
+            margin: { top: 1417, right: 1417, bottom: 1417, left: 1417 },
+          },
+        },
+        children: children.length ? children : [new Paragraph("")],
+      },
+    ],
   });
+
+  return Packer.toBlob(document);
+}
+
+export async function downloadDocx(sections: DocxSection[], filename: string) {
+  const blob = await buildDocx(sections);
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = window.document.createElement("a");
   a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
+  a.download = filename.endsWith(".docx") ? filename : `${filename}.docx`;
+  window.document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-}
-
-
-export function buildDocxFromHtmlAndDownload(
-  html: string,
-  filename = "document.docx"
-) {
-  try {
-    const parsed = parseParagraphHtml(html);
-    buildDocxFromTextNodesAndDownload(parsed, filename);
-  } catch (err) {
-    console.error("Failed to build docx", err);
-  }
-}
-
-export function buildDocxFromDocumentAndDownload(
-  doc: DocModel,
-  filename = "document.docx"
-) {
-  try {
-    const nodes: Text[] = [];
-    for (const section of doc.children) {
-      for (const paragraph of section.children) {
-        for (const t of paragraph.children) {
-          nodes.push(t);
-        }
-        // Paragraph break
-        nodes.push(new Text("\n", [new Style(false, false, false)]));
-      }
-      // Section break (extra paragraph)
-      nodes.push(new Text("\n", [new Style(false, false, false)]));
-    }
-
-    buildDocxFromTextNodesAndDownload(nodes, filename);
-  } catch (err) {
-    console.error("Failed to build docx from Document model", err);
-  }
 }

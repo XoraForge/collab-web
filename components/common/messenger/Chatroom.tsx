@@ -1,7 +1,8 @@
 import Icon from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
-import { Send, Upload, UserCircle } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import { useState } from "react";
+import { useComingSoon } from "@/lib/ToastContext";
 
 type Message = {
   user: string;
@@ -13,22 +14,24 @@ const TEST_MESSAGES = [
   {
     user: "Kelvin",
     isMe: false,
-    text: "Yo!",
+    text: "Hey team, the research draft is up.",
   },
   {
     user: "Jian Wei",
     isMe: false,
-    text: "Sup!",
+    text: "Nice! I'll review it tonight.",
   },
   {
     user: "Alex",
     isMe: true,
-    text: "WTF!",
+    text: "Thanks both, I'll start on the conclusion.",
   },
 ];
 
 export default function ChatRoom() {
-  const [messages, setMessages] = useState<Message[]>(TEST_MESSAGES);
+  const [messages] = useState<Message[]>(TEST_MESSAGES);
+  const [draft, setDraft] = useState("");
+  const comingSoon = useComingSoon();
   return (
     <div className="h-full flex flex-col">
       <div className="h-full flex flex-col gap-y-3 py-3 px-2">
@@ -56,11 +59,21 @@ export default function ChatRoom() {
           );
         })}
       </div>
-      <div className="p-2 border-t flex items-center justify-between gap-x-3">
-        <Icon icon="tdesign:attach" fontSize={25} />
-        <Input placeholder="Type here..." />
-        <Icon icon="material-symbols:send" fontSize={25} />
-      </div>
+      <form
+        className="p-2 border-t flex items-center justify-between gap-x-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          comingSoon("Project chat");
+        }}
+      >
+        <button type="button" aria-label="Attach a file" className="opacity-80 hover:opacity-100" onClick={() => comingSoon("File sharing")}>
+          <Icon icon="tdesign:attach" fontSize={25} />
+        </button>
+        <Input placeholder="Type here..." value={draft} onChange={(e) => setDraft(e.target.value)} aria-label="Message" />
+        <button type="submit" aria-label="Send message" className="opacity-80 hover:opacity-100">
+          <Icon icon="material-symbols:send" fontSize={25} />
+        </button>
+      </form>
     </div>
   );
 }

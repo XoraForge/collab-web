@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import { DatePicker } from "../ui/datepicker";
 import { Input } from "../ui/input";
 import { Select, SelectItem } from "./Dropdown";
@@ -13,10 +12,10 @@ interface FieldsetProps {
   type: "input" | "dropdown" | "datepicker";
   selectItems?: SelectItemProps[];
   value?: string;
-  setValue?: Dispatch<SetStateAction<string>>;
-  setItems?: Dispatch<SetStateAction<string>>;
+  setValue?: (value: string) => void;
+  setItems?: (value: string) => void;
   date?: Date;
-  setDate?: Dispatch<SetStateAction<Date>>;
+  setDate?: (date: Date) => void;
 }
 
 export default function Fieldset({
@@ -51,7 +50,12 @@ export default function Fieldset({
             ))}
         </Select>
       )}
-      {type == "datepicker" && <DatePicker date={date} setDate={setDate} />}
+      {type == "datepicker" && (
+        <DatePicker
+          date={date || new Date()}
+          setDate={(d) => setDate && setDate(d)}
+        />
+      )}
     </div>
   );
 }

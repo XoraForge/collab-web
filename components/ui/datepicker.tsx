@@ -9,14 +9,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 
 export function DatePicker({
   date,
   setDate,
 }: {
   date: Date;
-  setDate: Dispatch<SetStateAction<Date>>;
+  setDate: (date: Date) => void;
 }) {
   const [open, setOpen] = useState(false);
 

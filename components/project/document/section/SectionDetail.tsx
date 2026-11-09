@@ -13,7 +13,7 @@ export default function SectionDetail({
 }) {
   return (
     <div
-      className={`flex justify-between text-xs items-center pb-2 text-[#00000095] dark:text-[#ffffff95] ${className}`}
+      className={`flex justify-between text-xs items-center pb-2 text-subtle-text ${className}`}
     >
       <div className="flex gap-x-2 items-center">
         <Icon icon={icon} />

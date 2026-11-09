@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import "@/lib/dayjs";
-import DialogLayout from "@/components/dialog/DialogLayout";
 import DialogContextProvider from "@/lib/DialogContext";
 import ProjectContextProvider from "@/lib/CurrentProjectContext";
 import SidebarProvider from "@/lib/SidebarContext";
 import NavTabsContextProvider from "@/lib/NavTabsContext";
+import ToastProvider from "@/lib/ToastContext";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -33,8 +33,7 @@ export default function RootLayout({
           <SidebarProvider>
             <ProjectContextProvider>
               <DialogContextProvider>
-                {children}
-                <DialogLayout />
+                <ToastProvider>{children}</ToastProvider>
               </DialogContextProvider>
             </ProjectContextProvider>
           </SidebarProvider>
