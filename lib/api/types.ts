@@ -225,4 +225,115 @@ export type UpdateProjectRequest = {
   description?: string;
   startDate?: string;
   dueDate?: string;
+  /** An uploaded image URL; "" removes the image. */
+  imageUrl?: string;
 };
+
+// ---------- Activity & notifications ----------
+
+export type ActivityType =
+  | "PROJECT_CREATED"
+  | "PROJECT_UPDATED"
+  | "MEMBER_JOINED"
+  | "DOCUMENT_CREATED"
+  | "DOCUMENT_DELETED"
+  | "SECTION_ASSIGNED"
+  | "SECTION_PUBLISHED"
+  | "SECTION_SUBMITTED"
+  | "SECTION_APPROVED"
+  | "SECTION_REOPENED"
+  | "TASK_CREATED"
+  | "TASK_STATUS_CHANGED"
+  | "TASK_DELETED"
+  | "NOTE_CREATED";
+
+export type Activity = {
+  id: string;
+  projectId: string;
+  projectName: string | null;
+  actor: UserSummary | null;
+  type: ActivityType;
+  documentId: string | null;
+  sectionId: string | null;
+  taskId: string | null;
+  noteId: string | null;
+  /** The task/section/document/note title when it happened. */
+  targetTitle: string | null;
+  /** e.g. "v3 · message", a task status, or the names of new assignees. */
+  detail: string | null;
+  createdAt: string;
+};
+
+export type NotificationType =
+  | "SECTION_ASSIGNED"
+  | "TASK_ASSIGNED"
+  | "SECTION_SUBMITTED"
+  | "SECTION_APPROVED"
+  | "SECTION_REOPENED"
+  | "MEMBER_JOINED"
+  | "DUE_SOON";
+
+export type AppNotification = {
+  id: string;
+  projectId: string | null;
+  projectName: string | null;
+  actor: UserSummary | null;
+  type: NotificationType;
+  targetTitle: string | null;
+  detail: string | null;
+  /** Path in this app to open. */
+  link: string | null;
+  read: boolean;
+  createdAt: string;
+};
+
+export type NotificationList = { items: AppNotification[]; unreadCount: number };
+
+// ---------- Chat ----------
+
+export type ReplyPreview = { id: string; authorName: string | null; body: string | null; deleted: boolean };
+
+export type ChatMessage = {
+  id: string;
+  channelId: string;
+  author: UserSummary;
+  /** Markdown; null when deleted. */
+  body: string | null;
+  replyTo: ReplyPreview | null;
+  createdAt: string;
+  editedAt: string | null;
+  deleted: boolean;
+};
+
+export type ChatChannel = {
+  id: string;
+  projectId: string;
+  projectName: string;
+  projectImageUrl: string | null;
+  name: string;
+  lastMessage: ChatMessage | null;
+  unreadCount: number;
+};
+
+// ---------- Notes ----------
+
+export type Note = {
+  id: string;
+  projectId: string;
+  projectName: string | null;
+  title: string;
+  preview: string | null;
+  wordCount: number;
+  createdBy: UserSummary | null;
+  updatedBy: UserSummary | null;
+  createdAt: string;
+  updatedAt: string | null;
+  /** The creator or the team leader. */
+  canDelete: boolean;
+};
+
+export type NoteDetail = { note: Note; contentJson: string | null };
+
+// ---------- Files ----------
+
+export type UploadedFile = { id: string; url: string; filename: string; contentType: string; size: number };

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Home } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Menu } from "lucide-react";
 import User from "./User";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -7,19 +7,27 @@ import HeaderTabs from "./HeaderTabs";
 import HeaderActions from "./HeaderActions";
 
 export default function Header() {
-  const { setIsSidebarVisible } = useSidebarContext();
+  const { setIsSidebarVisible, setIsMobileNavOpen } = useSidebarContext();
   const router = useRouter();
 
   return (
-    <div className="w-full flex items-center justify-between px-6 py-3 bg-(--default-sidebar) border border-border">
-      <div className="flex w-full items-center gap-x-4">
+    <div className="w-full flex items-center justify-between gap-x-3 px-3 sm:px-6 py-3 bg-(--default-sidebar) border border-border">
+      <div className="flex w-full min-w-0 items-center gap-x-3 sm:gap-x-4">
+        <button
+          type="button"
+          aria-label="Open navigation"
+          onClick={() => setIsMobileNavOpen(true)}
+          className="lg:hidden text-text opacity-70 hover:opacity-100"
+        >
+          <Menu />
+        </button>
         {/* Navigation */}
-        <div className="flex gap-x-3 pr-5 border-r border-border text-text">
+        <div className="flex gap-x-3 pr-3 sm:pr-5 border-r border-border text-text shrink-0">
           <button
             type="button"
             aria-label="Go back"
             onClick={() => router.back()}
-            className="opacity-50 hover:opacity-100 transition-opacity duration-200"
+            className="hidden sm:block opacity-50 hover:opacity-100 transition-opacity duration-200"
           >
             <ChevronLeft />
           </button>
@@ -27,7 +35,7 @@ export default function Header() {
             type="button"
             aria-label="Go forward"
             onClick={() => router.forward()}
-            className="opacity-50 hover:opacity-100 transition-opacity duration-200"
+            className="hidden sm:block opacity-50 hover:opacity-100 transition-opacity duration-200"
           >
             <ChevronRight />
           </button>
@@ -40,11 +48,13 @@ export default function Header() {
           </Link>
         </div>
 
-        <HeaderTabs />
+        <div className="hidden md:flex min-w-0 overflow-x-auto no-scrollbar">
+          <HeaderTabs />
+        </div>
       </div>
 
       {/* User & Notifications */}
-      <div className="flex gap-x-3 items-center text-text">
+      <div className="flex gap-x-2 sm:gap-x-3 items-center text-text shrink-0">
         <HeaderActions />
         <User />
       </div>

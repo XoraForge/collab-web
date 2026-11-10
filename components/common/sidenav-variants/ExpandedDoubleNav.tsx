@@ -65,7 +65,7 @@ export default function ExpandedDoubleNav({
               <NavigationLink
                 href="/dashboard/chat"
                 icon="bx:chat"
-                title="Inbox"
+                title="Chats"
                 isExpanded={true}
                 handleExpandedToggle={handleExpandedFalse}
               />

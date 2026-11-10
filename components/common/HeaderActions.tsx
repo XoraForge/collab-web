@@ -2,11 +2,15 @@
 
 import Icon from "../ui/icon";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import NotificationBell from "./NotificationBell";
 
 /** Opens the bottom-right Messenger (it listens for this event). */
 export const OPEN_MESSENGER_EVENT = "collab:open-messenger";
 
 const WHATS_NEW = [
+  { title: "Notifications", text: "The bell tells you when you're assigned, reviewed or approved, and reminds you before things are due." },
+  { title: "Project chat", text: "Every project has its own chatroom. Open it from Messages." },
+  { title: "Notes", text: "Shared project notes that everyone edits together, live." },
   { title: "Tasks & timeline", text: "Board, list and a Gantt timeline. Drag bars; dependent tasks move automatically." },
   { title: "Sectioned documents", text: "Assign document sections, edit together live, and publish versions." },
   { title: "Version history", text: "See exactly what changed in each published version, and restore it." },
@@ -48,23 +52,7 @@ export default function HeaderActions() {
         <Icon icon="lets-icons:message-alt-fill" fontSize={20} />
       </button>
 
-      <Popover>
-        <PopoverTrigger asChild>
-          <button type="button" aria-label="Notifications" title="Notifications" className={iconButton}>
-            <Icon icon="ion:notifications" fontSize={17} />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent align="end" className="w-80">
-          <p className="text-sm font-semibold">Notifications</p>
-          <div className="flex flex-col items-center text-center gap-y-1 py-6">
-            <Icon icon="ion:notifications-off-outline" fontSize={26} className="opacity-50" />
-            <p className="text-sm font-medium">You&apos;re all caught up</p>
-            <p className="text-xs text-muted-text max-w-60">
-              Deadline reminders, mentions and approvals will show up here soon.
-            </p>
-          </div>
-        </PopoverContent>
-      </Popover>
+      <NotificationBell />
     </>
   );
 }

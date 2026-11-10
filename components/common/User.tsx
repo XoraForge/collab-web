@@ -16,7 +16,7 @@ export default function User() {
         <button
           type="button"
           aria-label="Account menu"
-          className="border p-2 flex items-center justify-between gap-x-2 rounded-full min-w-[150px] max-w-[220px] hover:bg-border transition-colors duration-200"
+          className="border p-2 flex items-center justify-between gap-x-2 rounded-full sm:min-w-[150px] max-w-[220px] hover:bg-border transition-colors duration-200"
         >
           <div className="flex gap-x-2 items-center min-w-0">
             {me ? (
@@ -24,7 +24,7 @@ export default function User() {
             ) : (
               <span className="size-6 shrink-0 rounded-full bg-border animate-pulse" />
             )}
-            <p className="text-sm truncate">{me ? name : ""}</p>
+            <p className="hidden sm:block text-sm truncate">{me ? name : ""}</p>
           </div>
           <div className="flex items-center gap-x-1 shrink-0">
             <div className="size-1.5 rounded-full bg-green-500"></div>

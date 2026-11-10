@@ -15,6 +15,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { ApiError } from "@/lib/api/client";
+import { uploadImage } from "@/lib/api/Files";
+import { useToast } from "@/lib/ToastContext";
+import { useParams } from "next/navigation";
 import { Editor, useEditorState } from "@tiptap/react";
 import {
   AlignCenter,
@@ -257,6 +261,8 @@ function Toolbar({
   onExport,
 }: Props & { editor: Editor }) {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const params = useParams<{ id: string }>();
+  const toast = useToast();
 
   const state = useEditorState({
     editor,
@@ -308,18 +314,10 @@ function Toolbar({
     e.target.value = "";
     if (!file) return;
 
-    // TODO(backend): upload the file and insert its URL instead of a data URL.
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        editor
-          .chain()
-          .focus()
-          .setImage({ src: reader.result, alt: file.name })
-          .run();
-      }
-    };
-    reader.readAsDataURL(file);
+    // Upload, then insert the image's URL (only project members can open it).
+    uploadImage(file, { projectId: typeof params.id === "string" ? params.id : undefined })
+      .then((uploaded) => editor.chain().focus().setImage({ src: uploaded.url, alt: file.name }).run())
+      .catch((err) => toast(err instanceof ApiError ? err.message : "The image couldn't be uploaded."));
   }
 
   const currentFontSize = state.fontSize

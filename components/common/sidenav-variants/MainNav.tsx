@@ -93,7 +93,7 @@ export default function MainNav({
               <NavigationLink
                 href="/dashboard/chat"
                 icon="bx:chat"
-                title="Inbox"
+                title="Chats"
                 handleExpandedToggle={handleExpandedFalse}
               />
             </SideNavDropdown>

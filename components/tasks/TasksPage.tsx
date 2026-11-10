@@ -77,6 +77,12 @@ export default function TasksPage({ projectId }: { projectId: string }) {
     load();
   }, [load]);
 
+  // Links from notifications and activity (?task=<id>) open that task until it's closed.
+  const linkedTask = searchParams.get("task");
+  const [closedLink, setClosedLink] = useState<string | null>(null);
+  const linkedItem = linkedTask && linkedTask !== closedLink ? items?.find((i) => i.id === linkedTask) : undefined;
+  const activeDialog: TaskDialogState | null = dialog ?? (linkedItem ? { mode: "edit", item: linkedItem } : null);
+
   // Teammates' changes appear live.
   useProjectEvents(
     projectId,
@@ -228,11 +234,14 @@ export default function TasksPage({ projectId }: { projectId: string }) {
 
       {project && (
         <TaskDialog
-          state={dialog}
+          state={activeDialog}
           projectId={project.id}
           members={members}
           items={items ?? []}
-          onClose={() => setDialog(null)}
+          onClose={() => {
+            setDialog(null);
+            setClosedLink(linkedTask);
+          }}
           onSaved={(message) => {
             if (message) setNotice(message);
             load();

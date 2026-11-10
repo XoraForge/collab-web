@@ -10,6 +10,7 @@ import { useAllWork } from "@/lib/useAllWork";
 import { cn } from "@/lib/utils";
 import { BookOpenText, CalendarClock, Diamond, FileText, Plus } from "lucide-react";
 import Link from "next/link";
+import RecentActivity from "@/components/activity/RecentActivity";
 
 function greeting() {
   const h = new Date().getHours();
@@ -52,7 +53,7 @@ export default function DashboardHome() {
     .sort((a, b) => a.date.localeCompare(b.date));
 
   return (
-    <div className="flex flex-col gap-y-6 px-8 py-6 text-text">
+    <div className="flex flex-col gap-y-6 px-4 sm:px-8 py-6 pb-24 text-text">
       <div>
         <p className="text-sm text-muted-text" suppressHydrationWarning>
           {dayjs().format("dddd, D MMMM YYYY")}
@@ -126,7 +127,7 @@ export default function DashboardHome() {
                 href={
                   task.kind === "SECTION" && task.documentId
                     ? `/dashboard/project/${task.projectId}/files/${task.documentId}?section=${task.id}`
-                    : `/dashboard/project/${task.projectId}/assignments`
+                    : `/dashboard/project/${task.projectId}/assignments?task=${task.id}`
                 }
                 className="flex items-center justify-between gap-x-3 rounded-sm px-2 py-2 hover:bg-hover"
               >
@@ -182,6 +183,18 @@ export default function DashboardHome() {
         </Card>
       </div>
 
+      <Card
+        title="Recent activity"
+        action={
+          <Link href="/dashboard/activities" className="text-xs text-muted-text hover:text-text">
+            See all
+          </Link>
+        }
+      >
+        <div className="px-2 py-1">
+          <RecentActivity limit={10} />
+        </div>
+      </Card>
     </div>
   );
 }

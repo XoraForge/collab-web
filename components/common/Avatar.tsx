@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
@@ -32,13 +31,10 @@ export default function Avatar({
       title={name}
     >
       {src ? (
-        <Image
-          src={src}
-          fill
-          sizes={`${size}px`}
-          className="object-cover"
-          alt={name}
-        />
+        // A plain <img>: uploaded pictures are served through the signed-in API proxy,
+        // which Next's image optimizer can't reach with the user's session.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt={name} className="absolute inset-0 size-full object-cover" />
       ) : (
         initials
       )}
