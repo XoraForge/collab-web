@@ -291,7 +291,7 @@ function PublishButton({
 }
 
 /** Connection + autosave state from the provider. */
-function useConnectionState(provider: HocuspocusProvider) {
+export function useConnectionState(provider: HocuspocusProvider) {
   const [status, setStatus] = useState<WebSocketStatus>(WebSocketStatus.Connecting);
   const [unsynced, setUnsynced] = useState(0);
 
@@ -315,7 +315,7 @@ function useConnectionState(provider: HocuspocusProvider) {
 }
 
 /** People currently in this section (from Yjs awareness). */
-function usePresence(provider: HocuspocusProvider): PresenceUser[] {
+export function usePresence(provider: HocuspocusProvider): PresenceUser[] {
   const [people, setPeople] = useState<PresenceUser[]>([]);
 
   useEffect(() => {

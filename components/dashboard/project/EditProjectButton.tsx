@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { OptionalDate } from "@/components/ui/optional-date";
 import { ApiError } from "@/lib/api/client";
 import { updateProject } from "@/lib/api/Task";
+import { dataUrlToBlob, uploadImage } from "@/lib/api/Files";
+import ImageCropper from "@/components/image/ImageCropper";
 import type { Project } from "@/lib/api/types";
 import dayjs from "@/lib/dayjs";
 import { useSession } from "@/lib/SessionContext";
@@ -15,7 +17,7 @@ import { useState } from "react";
 
 const iso = (d: Date | null) => (d ? dayjs(d).format("YYYY-MM-DD") : undefined);
 
-/** Team leader edits the project's name, description and dates. */
+/** Team leader edits the project's name, description, image and dates. */
 export default function EditProjectButton({ project }: { project: Project }) {
   const router = useRouter();
   const { refresh } = useSession();
@@ -60,6 +62,7 @@ function EditForm({ project, onDone }: { project: Project; onDone: () => void })
   const [description, setDescription] = useState(project.description ?? "");
   const [start, setStart] = useState<Date | null>(project.startDate ? dayjs(project.startDate).toDate() : null);
   const [due, setDue] = useState<Date | null>(project.dueDate ? dayjs(project.dueDate).toDate() : null);
+  const [image, setImage] = useState<string | null>(null); // new cropped data URL, "" = remove
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const dateError = start && due && due < start ? "The due date can't be before the start date." : "";
@@ -70,11 +73,18 @@ function EditForm({ project, onDone }: { project: Project; onDone: () => void })
     setBusy(true);
     setError("");
     try {
+      const imageUrl =
+        image === null
+          ? undefined
+          : image === ""
+            ? ""
+            : (await uploadImage(await dataUrlToBlob(image), { projectId: project.id, filename: "project.jpg" })).url;
       await updateProject(project.id, {
         name: name.trim(),
         description,
         startDate: iso(start),
         dueDate: iso(due),
+        imageUrl,
       });
       onDone();
     } catch (err) {
@@ -102,10 +112,28 @@ function EditForm({ project, onDone }: { project: Project; onDone: () => void })
         <span className={labelClass}>Project name</span>
         <Input value={name} maxLength={100} onChange={(e) => setName(e.target.value)} />
       </label>
+      <div className="flex flex-col gap-y-1.5">
+        <span className={labelClass}>Project image</span>
+        <div className="flex items-center gap-x-3">
+          {project.imageUrl && image === null && (
+            // eslint-disable-next-line @next/next/no-img-element -- uploaded image served by the API
+            <img src={project.imageUrl} alt="Current project image" className="size-14 rounded-md object-cover border border-border" />
+          )}
+          <div className="grow">
+            <ImageCropper onChange={(url) => setImage(url || null)} prompt="Upload a new image" doneLabel="New image ready" />
+          </div>
+        </div>
+        {project.imageUrl && image === null && (
+          <button type="button" className="self-start text-xs text-muted-text hover:text-text hover:underline" onClick={() => setImage("")}>
+            Remove image
+          </button>
+        )}
+        {image === "" && <p className="text-xs text-muted-text">The image will be removed when you save.</p>}
+      </div>
       <label className="flex flex-col gap-y-1.5">
         <span className={labelClass}>Description (Markdown supported)</span>
         <textarea
-          rows={8}
+          rows={6}
           maxLength={5000}
           value={description}
           onChange={(e) => setDescription(e.target.value)}

@@ -6,7 +6,9 @@ import { useProjectContext } from "@/lib/CurrentProjectContext";
 import dayjs from "@/lib/dayjs";
 import { useNavTabContext } from "@/lib/NavTabsContext";
 import { VISIBILITY_LABEL } from "@/lib/projectStatus";
-import { BookOpenText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { OPEN_MESSENGER_EVENT } from "@/components/common/HeaderActions";
+import { BookOpenText, MessagesSquare } from "lucide-react";
 import EditProjectButton from "./EditProjectButton";
 import InviteButton from "./InviteButton";
 import ShareButton from "./ShareButton";
@@ -29,7 +31,7 @@ export default function ProjectDetails({ project }: { project: Project }) {
   const ownerName = project.owner.name || project.owner.email;
 
   return (
-    <div className="flex justify-between items-center gap-x-6 text-text">
+    <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 md:gap-x-6 text-text">
       {/* Image and Name */}
       <div className="flex gap-x-6 min-w-0">
         <div className="size-32 shrink-0 relative overflow-hidden border border-border flex items-center justify-center rounded-md">
@@ -74,8 +76,18 @@ export default function ProjectDetails({ project }: { project: Project }) {
               </p>
             </div>
           )}
-          {/* Actions (Share | Invite | Edit) */}
-          <div className="flex gap-x-3">
+          {/* Actions (Chat | Share | Invite | Edit) */}
+          <div className="flex flex-wrap justify-end gap-3">
+            {project.role && (
+              <Button
+                variant="outline"
+                onClick={() =>
+                  window.dispatchEvent(new CustomEvent(OPEN_MESSENGER_EVENT, { detail: { projectId: project.id } }))
+                }
+              >
+                <MessagesSquare size={15} /> Chat
+              </Button>
+            )}
             <ShareButton project={project} />
             <InviteButton
               projectId={project.id}

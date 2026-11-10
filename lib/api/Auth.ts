@@ -31,3 +31,19 @@ export function logout() {
 export function getCurrentUser() {
   return api<CurrentUser>("/auth/me");
 }
+
+/** Settings: name and profile picture (imageUrl: null = unchanged, "" = remove). */
+export function updateProfile(name: string, imageUrl?: string | null) {
+  return api<CurrentUser>("/auth/me", {
+    method: "PATCH",
+    body: JSON.stringify({ name, imageUrl: imageUrl ?? null }),
+  });
+}
+
+/** Throws ApiError WRONG_PASSWORD when the current password is wrong. */
+export function changePassword(currentPassword: string, newPassword: string) {
+  return api<void>("/auth/me/password", {
+    method: "POST",
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+}

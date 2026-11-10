@@ -8,9 +8,13 @@ import { Area, getCroppedImage } from "./cropImage";
 
 export default function ImageCropper({
   onChange,
+  prompt = "Upload Project Profile Image",
+  doneLabel = "Project image set",
 }: {
-  /** Called with the cropped image as a PNG data URL, or "" when removed. */
+  /** Called with the cropped image as a JPEG data URL, or "" when removed. */
   onChange?: (dataUrl: string) => void;
+  prompt?: string;
+  doneLabel?: string;
 }) {
   const [imageSrc, setImageSrc] = useState("");
   const [croppedImage, setCroppedImage] = useState("");
@@ -65,7 +69,7 @@ export default function ImageCropper({
       {imageSrc === "" && (
         <>
           <Icon icon="proicons:photo" fontSize={35} />
-          <p className="text-sm font-medium">Upload Project Profile Image</p>
+          <p className="text-sm font-medium">{prompt}</p>
         </>
       )}
 
@@ -91,7 +95,7 @@ export default function ImageCropper({
             {/* eslint-disable-next-line @next/next/no-img-element -- local data URL preview */}
             <img
               src={croppedImage}
-              alt="Project profile preview"
+              alt="Preview"
               className="size-16 rounded-md object-cover border border-border"
             />
             <button
@@ -106,7 +110,7 @@ export default function ImageCropper({
               <X size={12} />
             </button>
           </div>
-          <p className="text-xs font-medium opacity-70">Project image set</p>
+          <p className="text-xs font-medium opacity-70">{doneLabel}</p>
         </div>
       )}
 

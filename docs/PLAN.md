@@ -1,6 +1,6 @@
 # Collab: Product & Build Plan
 
-_Last updated: 9 November 2026_
+_Last updated: 10 November 2026_
 
 ## 1. What Collab is
 
@@ -22,6 +22,8 @@ Teams set deadlines, assign tasks, schedule meetings, and talk through built-in 
 |---|---|---|
 | Projects | Up to **2** | Unlimited |
 | AI tools (rubric checks, AI health checks, NLP commands, automation) | No | Yes |
+
+> **For now (decided 10 Nov 2026): everyone is on Premium.** The priority is a usable app with every feature open to everyone. Pricing, the Free tier, payments and AI come after that. The API switch `app.plan.everyone-premium` (env `EVERYONE_PREMIUM`, default `true`) does this; set it to `false` to enforce the Free plan again. The plan code and the 2-project limit stay in place.
 
 ### Platforms
 1. **Web**: Chrome, Safari, Firefox (launch first)
@@ -230,7 +232,7 @@ Voice could move earlier if it matters for launch. It's independent of the other
 - The team leader manages sections (add, rename, delete, drag to reorder) and sets assignees, due date, word target and requirements/rubric in **Section Information**.
 - The project page's **Invite** button lets the leader add existing users by email (needed to assign sections).
 
-**collab-api:** new tables `project_documents`, `document_sections`, `section_assignees`, `section_drafts`, `section_versions`. Endpoints for documents, sections, versions, members and `GET /sections/{id}/access`. Internal endpoints `/internal/v1/sections/{id}/draft` for collab-realtime, protected by `INTERNAL_API_KEY`. The old unused `model/docx` classes are still there; they can be deleted.
+**collab-api:** new tables `project_documents`, `document_sections`, `section_assignees`, `section_drafts`, `section_versions`. Endpoints for documents, sections, versions, members and `GET /sections/{id}/access`. Internal endpoints `/internal/v1/sections/{id}/draft` for collab-realtime, protected by `INTERNAL_API_KEY`. The old unused `model/docx` classes were deleted on 10 Nov.
 
 **collab-realtime:** Hocuspocus 4 on port 3001 (your Express app still serves normal HTTP routes). It needs `.env`: `PORT`, `API_URL`, `INTERNAL_API_KEY` (same value as the API). Run with `npm run dev`.
 
@@ -252,11 +254,41 @@ Voice could move earlier if it matters for launch. It's independent of the other
 - **Invites:** "Invite" now takes any email. Existing users join immediately. Others get a pending invite and **join automatically when they sign up**. The leader also gets a **shareable invite link** (14 days, can be reset) and can cancel pending invites. New page: `/invite/<token>` shows who invited you to which project, with Log in / Sign up / Join.
 - **Verified:** API test (permissions, versions, invites incl. email mismatch, single-use, reset link), 18-step live/TOC/invite browser test, the 20-step three-person editing test, API test suite, lint, typecheck and production build.
 
+### 10 November 2026: everyone on Premium
+- Priority changed to a usable app first, with AI and payments parked. **collab-api:** new switch `app.plan.everyone-premium` (env `EVERYONE_PREMIUM`, default `true`). `/auth/me` reports `PREMIUM` with no project limit, and project creation isn't limited. The web app already handles this: the sidebar shows "Premium Tier · PRO" and Create Project never shows the limit warning. API test suite passes.
+
+### 10 November 2026: database moved to Supabase
+- **Supabase Postgres 17 replaces Neon.** collab-api's `.env` now has `DB_URL` (direct connection, `sslmode=require`), `DB_USERNAME`, `DB_PASSWORD` (points at `SUPABASE_PASSWORD`), `JWT_SECRET`, `JWT_EXPIRATION_MS` and `INTERNAL_API_KEY` (same value as collab-realtime). `./mvnw spring-boot:run` now works without the `local` profile.
+- **Verified against Supabase:** sign-up, login, Premium with no limit, 3 projects, document + sections, task, work items, 401 without a token, internal key, and data surviving a restart.
+- Removed the unused `model/docx` classes. Their 8 tables (`documents`, `sections`, `paragraphs`, `elements`, `style`, `documents_sections`, `sections_paragraphs`, `paragraphs_elements`) still exist in Supabase and can be dropped.
+- `DB_URL` now uses the Supabase **Session pooler** (IPv4, works when deployed). It must be in JDBC form, `jdbc:postgresql://<pooler-host>:5432/postgres?sslmode=require`, not the `postgresql://user:password@…` string the dashboard shows. `DB_USERNAME` is `postgres.<project-ref>`, and `DB_PASSWORD` holds the database password. The unused `SUPABASE_*` variables were removed.
+
+### 11 November 2026: notifications, activity, chat, notes, uploads, settings, small screens (steps 1–3)
+**Notifications and activity (10.2)**
+- **Activity log** (`activity_events`): project created/updated, member joined, document created/deleted, section assigned/published/submitted/approved/reopened, task created/moved/deleted, note added. Shown on the project page (live), the dashboard ("Recent activity") and the Activities page (filter by project, load more). Entries link to the section, task or note.
+- **Notifications** (`notifications`): assigned to a section or task, section submitted (to the leader), approved or reopened (to assignees), someone joined by invite (to the leader). You're never notified about your own actions. The header bell has an unread badge, mark read, mark all read, and opens the linked item. Pushed live through a personal `user:<id>` room on collab-realtime, refreshed again whenever that connection (re)connects.
+- **Due-date reminders**: an hourly job reminds assignees 3 days before, 1 day before and on the day a task or section is due (each reminder sent once). Unassigned sections remind the leader. `POST /internal/v1/reminders/run` runs it on demand.
+- Links: `/assignments?task=<id>` now opens that task.
+
+**Chat (10.3)**
+- One "general" channel per project (`chat_channels`, `chat_messages`, `chat_read_states`). Markdown messages, replies, edit (author), delete (author or leader), unread counts, typing indicator (sent through the project room, throttled).
+- The Messenger uses real data: list of project chats with unread badges (live via the user room), a chatroom with history and "Load earlier". New full-page chat at `/dashboard/chat` (sidebar "Chats"), and a **Chat** button on the project page.
+
+**Usability gaps**
+- **Notes**: shared project notes (`project_notes`), edited live by every member in `note:<id>` rooms (no drafts/versions), autosaved with a preview. Project Notes tab (list + editor, rename, delete by creator or leader) and `/dashboard/notes` across projects.
+- **Uploads**: `POST /files` (PNG/JPEG/GIF/WebP, up to 5 MB), stored in Postgres (`stored_files`) for now and served at `/api/backend/files/<id>`. Project files are members-only. Used for project images (create + edit), profile pictures and images in documents and notes. The web proxy now passes binary bodies through. Move to Supabase Storage later; URLs can stay the same.
+- **Settings**: name, profile picture, password change. Plan shows Premium (early access).
+- **Small screens**: the sidebar becomes a slide-in drawer under 1024px (menu button in the header), the header and project page stack, project tabs scroll sideways. Checked at 390px wide on the dashboard, project, activity, notes, settings and chat pages. The document editor and timeline are still desktop-first.
+
+**Verified:** API end-to-end (88 checks), realtime WebSocket test (21: user rooms, chat events, typing, live notes, autosave, delete closes editors), two-person browser test on the production build (38: live bell, activity, chat with typing/reply/edit/delete, live notes with image upload, settings, mobile layouts, no console errors), a document editor regression check, API test suite, lint, typecheck, build.
+
 ## 8. Open questions
 
 1. ~~**Backend**~~: answered, see section 9.
 2. ~~**Real-time infrastructure**~~: answered: own Node service (`collab-realtime`), see section 9.
 3. ~~**Editor**~~: decided: **TipTap** (done, see progress log).
+_Questions 4 and 5 are parked until the app is usable (see Suggested order)._
+
 4. **AI provider** and whether AI runs through your backend (recommended, so keys stay secret and Premium is enforced).
 5. **Payments** provider and pricing for Premium.
 6. **Launch audience**: universities first (the ICT374 sample data suggests so)? That shapes privacy, roles (lecturer/reviewer) and onboarding.
@@ -271,7 +303,7 @@ Three repos in the XoraForge GitHub org:
 | Repo | Stack | Job | Local port |
 |---|---|---|---|
 | `collab-web` (this repo) | Next.js 16, React 19, TipTap | UI | 3000 |
-| `collab-api` | Spring Boot 4, Java 25, JPA, PostgreSQL, JWT (jjwt) | Accounts, projects, members, tasks, files, permissions. **Source of truth.** | 8080 (`/api/v1`) |
+| `collab-api` | Spring Boot 4, Java 25, JPA, PostgreSQL (Supabase), JWT (jjwt) | Accounts, projects, members, tasks, files, permissions. **Source of truth.** | 8080 (`/api/v1`) |
 | `collab-realtime` | Node + TypeScript, Express (skeleton today) | WebSockets: live document editing, chat, presence, call signalling | 3001 |
 
 ```
@@ -389,6 +421,12 @@ Collab is a **project-management SaaS**: projects with start and end dates, task
 
 ### 10.8 Built-in Excel, PowerPoint, UML and graphs
 All of these reuse the document model (a file in a project made of assignable parts with drafts, publish and history):
+- **Excel, the user's vision (10 Nov 2026): formulas made easy.** The headline feature isn't the grid, it's helping people use formulas:
+  - A **formula picker** modal: browse or search formulas by what you want to do ("add up", "average", "look up a value", "count if…"), not only by name.
+  - Each formula has a **plain-language guide**: what it does, each argument explained, and a worked example.
+  - **Live preview**: pick the cells or ranges and see the result (and any error, explained) before inserting it.
+  - Then insert it into the cell in one click.
+  - _To discuss in more depth before building._
 - **Excel:** each **sheet is a section** (assignable). Use an MIT-licensed spreadsheet component (FortuneSheet) with its operations synced through collab-realtime, snapshots stored like drafts, and `.xlsx` export via ExcelJS. Formula engines differ in licensing (e.g. HyperFormula is GPL/commercial), so check before choosing.
 - **PowerPoint:** each **slide is a section**. A 16:9 canvas of positioned text boxes (TipTap), images and shapes stored in Yjs. Present mode, and `.pptx` export via PptxGenJS (MIT).
 - **UML and diagrams:** React Flow (MIT) with UML node types (class, sequence, use case). Mermaid as a quick text-to-diagram option.
@@ -401,17 +439,22 @@ All of these reuse the document model (a file in a project made of assignable pa
 
 ### 10.10 Production readiness
 - Flyway migrations (replace `ddl-auto`), file and image uploads to object storage (S3 / R2) instead of data URLs, Redis so several collab-realtime instances share rooms, CI, and error monitoring.
-- **Deploy:** web on Vercel, API and realtime on a host that supports WebSockets (e.g. Fly.io / Render), Postgres on Neon.
+- **Deploy:** web on Vercel, API and realtime on a host that supports WebSockets (e.g. Fly.io / Render), Postgres on **Supabase** (use its Session pooler connection string; the direct host is IPv6-only).
 - **Mobile:** after the web app is stable. A responsive web app first, then native iOS/Android.
 
 ### Suggested order
+**Usable app first (decided 10 Nov 2026).** Everyone is treated as Premium and every feature is open. AI, payments, pricing and the Free tier are parked until the app is usable end to end.
+
 | # | Build | Why first |
 |---|---|---|
 | 1 ✅ | Tasks + Timeline (10.1) | Core of a PM tool; sections already behave like tasks |
-| 2 | Notifications + activity (10.2) | Deadlines need reminders; feeds Health and the dashboard |
-| 3 | Chat (10.3) | Messenger UI already exists; reuses project events |
+| 2 ✅ | Notifications + activity (10.2) | Deadlines need reminders; feeds Health and the dashboard |
+| 3 ✅ | Chat (10.3) | Messenger UI already exists; reuses project events |
 | 4 | Calls (10.4) | Builds on the chat panel and project rooms |
 | 5 | Meetings + Dashboard (10.5, 10.6) | Ties tasks, deadlines and calls together |
-| 6 | Project Health (10.7) | Needs tasks, activity and word targets in place |
+| 6 | Project Health, rule checks only (10.7) | Needs tasks, activity and word targets in place |
 | 7 | Excel, then PowerPoint, then UML/graphs (10.8) | Same section model, one tool at a time |
-| 8 | Premium + AI (10.9), production (10.10) | Monetise once the core is solid |
+
+**Done (11 Nov 2026):** notifications + activity, usability gaps (Settings, Notes, uploads, small screens), project chat. Branch `feature/usable-app` in all three repos. **Next:** calls (10.4).
+| 8 | Production readiness (10.10) | Deploy once the core is solid |
+| Later | AI checks, AI command bar, payments, pricing, Free tier (10.9) | Parked until the app is usable |

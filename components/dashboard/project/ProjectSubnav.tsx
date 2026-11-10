@@ -28,7 +28,7 @@ export default function ProjectSubnav({
 
   return (
     <div className="w-full bg-card dark:bg-(--default-sidebar) border-b border-border">
-      <div className="flex items-center justify-between gap-x-4 px-6 pt-4">
+      <div className="flex items-center justify-between gap-x-4 px-4 sm:px-6 pt-4">
         <Link href={project ? `/dashboard/project/${project.id}` : "#"} className="flex items-center gap-x-3 min-w-0 group">
           <span className="size-9 shrink-0 rounded-md border border-border overflow-hidden flex items-center justify-center">
             {project?.imageUrl ? (
@@ -44,7 +44,7 @@ export default function ProjectSubnav({
         </Link>
         {actions && <div className="flex items-center gap-x-2 shrink-0">{actions}</div>}
       </div>
-      <div className="px-6 pt-3">{project && <Tabs projectId={project.id} compact />}</div>
+      <div className="px-4 sm:px-6 pt-3">{project && <Tabs projectId={project.id} compact />}</div>
     </div>
   );
 }

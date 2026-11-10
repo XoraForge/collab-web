@@ -19,7 +19,7 @@ export default function Tabs({ projectId, compact = false }: { projectId: string
   const base = `/dashboard/project/${projectId}`;
 
   return (
-    <nav aria-label="Project" className={cn("flex w-full", compact ? "gap-x-6" : "gap-x-12")}>
+    <nav aria-label="Project" className={cn("flex w-full overflow-x-auto no-scrollbar", compact ? "gap-x-6" : "gap-x-8 lg:gap-x-12")}>
       {PROJECT_TABS.map((tab) => {
         const href = base + tab.path;
         const isActive = tab.path === "" ? pathname === base || pathname === `${base}/overview` : pathname.startsWith(href);
@@ -29,7 +29,7 @@ export default function Tabs({ projectId, compact = false }: { projectId: string
             href={href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "duration-200 ease-in-out font-medium",
+              "duration-200 ease-in-out font-medium whitespace-nowrap shrink-0",
               compact && "text-sm py-2 border-b-2",
               isActive
                 ? cn("text-(--text)", compact && "border-(--text)")

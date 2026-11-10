@@ -1,5 +1,4 @@
-import Activity from "@/components/dashboard/project/Activity";
-import ActivityDetail from "@/components/dashboard/project/ActivityDetail";
+import ProjectActivity from "@/components/activity/ProjectActivity";
 import DetailTitle from "@/components/dashboard/project/DetailTitle";
 import ProjectDetails from "@/components/dashboard/project/ProjectDetails";
 import Tabs from "@/components/dashboard/project/Tabs";
@@ -22,11 +21,6 @@ async function loadProject(id: string): Promise<Project> {
   return res.json();
 }
 
-function activityDate(iso: string) {
-  const date = dayjs(iso);
-  return date.isSame(dayjs(), "day") ? "Today" : date.format("D MMMM");
-}
-
 export default async function page({
   params,
 }: {
@@ -41,17 +35,17 @@ export default async function page({
     <div className="flex flex-col size-full bg-bg text-text">
       {/* Banner */}
       <div className="w-full bg-card dark:bg-(--default-sidebar) border-b border-border flex justify-center">
-        <div className="w-[80%] py-6 flex flex-col gap-y-8">
+        <div className="w-full px-4 lg:px-0 lg:w-[80%] py-6 flex flex-col gap-y-8">
           <ProjectDetails project={project} />
           <Tabs projectId={project.id} />
         </div>
       </div>
 
       {/* Screens */}
-      <div className="flex flex-1 min-h-0 justify-center">
-        <div className="w-[80%] flex gap-x-6 pt-5">
+      <div className="flex flex-1 min-h-0 justify-center overflow-y-auto lg:overflow-visible">
+        <div className="w-full px-4 lg:px-0 lg:w-[80%] flex flex-col lg:flex-row gap-6 pt-5">
           {/* Left */}
-          <div className="flex flex-col w-[70%] overflow-y-auto no-scrollbar gap-y-3 pb-6">
+          <div className="flex flex-col lg:w-[70%] lg:overflow-y-auto no-scrollbar gap-y-3 pb-6">
             <h3 className="text-lg">Overview</h3>
             <hr />
             {project.description ? (
@@ -70,7 +64,7 @@ export default async function page({
           </div>
 
           {/* Right */}
-          <div className="w-[30%] h-fit flex flex-col gap-y-3">
+          <div className="lg:w-[30%] h-fit flex flex-col gap-y-3 pb-24 lg:pb-0">
             {/* Project Details */}
             <div className="bg-card dark:bg-(--default-sidebar) border border-border rounded-md px-3 py-2">
               <h1 className="text-lg font-medium">Project Details</h1>
@@ -118,19 +112,7 @@ export default async function page({
             <div className="bg-card dark:bg-(--default-sidebar) border border-border rounded-md px-3 py-2">
               <h1 className="text-lg font-medium">Recent Activities</h1>
 
-              <div className="flex flex-col gap-y-6 mt-3 opacity-70">
-                {/* TODO: activity feed from the API. Until then, show the creation event. */}
-                {project.createdAt && (
-                  <Activity
-                    date={activityDate(project.createdAt)}
-                    time={dayjs(project.createdAt).format("h:mmA")}
-                  >
-                    <ActivityDetail name={ownerName} imageUrl={project.owner.imageUrl}>
-                      <b>initialized</b> the project
-                    </ActivityDetail>
-                  </Activity>
-                )}
-              </div>
+              <ProjectActivity projectId={project.id} />
             </div>
           </div>
         </div>

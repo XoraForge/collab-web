@@ -5,6 +5,7 @@ import ImageCropper from "@/components/image/ImageCropper";
 import { Button } from "@/components/ui/button";
 import { ApiError } from "@/lib/api/client";
 import { createProject } from "@/lib/api/Project";
+import { dataUrlToBlob, uploadImage } from "@/lib/api/Files";
 import { ProjectVisibility } from "@/lib/api/types";
 import dayjs from "@/lib/dayjs";
 import { useSession } from "@/lib/SessionContext";
@@ -78,13 +79,17 @@ export default function InitProjectDialog({
     setIsSubmitting(true);
     setError("");
     try {
+      // Upload the cropped image first, so the project stores a short URL rather than the image itself.
+      const uploadedImage = imageUrl
+        ? (await uploadImage(await dataUrlToBlob(imageUrl), { filename: "project.jpg" })).url
+        : undefined;
       const project = await createProject({
         name: projectName.trim(),
         description: description.trim() || undefined,
         visibility: visibility.value,
         startDate: dayjs(startDate).format("YYYY-MM-DD"),
         dueDate: dayjs(date).format("YYYY-MM-DD"),
-        imageUrl: imageUrl || undefined,
+        imageUrl: uploadedImage,
       });
       await refresh();
       handleCloseDialog();
