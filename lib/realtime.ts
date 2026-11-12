@@ -24,6 +24,8 @@ export type ProjectEventType =
   | "NOTES_CHANGED"
   | "CHAT_MESSAGE"
   | "CHAT_MESSAGE_UPDATED"
+  /** Someone joined or left the project's call. */
+  | "CALL_CHANGED"
   /** Sent by collab-realtime itself when a member is typing in a chat. */
   | "TYPING";
 
@@ -87,7 +89,17 @@ export function useProjectEvents(
   return { send };
 }
 
-export type UserEvent = { userId: string; type: "NOTIFICATION" | "CHAT" };
+export type UserEvent = {
+  userId: string;
+  /** CALL: a call in one of my projects changed. CALL_STARTED: someone started one. */
+  type: "NOTIFICATION" | "CHAT" | "CALL" | "CALL_STARTED";
+  /** CALL and CALL_STARTED */
+  projectId?: string;
+  /** CALL: how many people are in that project's call now */
+  participantCount?: number;
+  projectName?: string;
+  startedBy?: { id: string; name: string };
+};
 
 /**
  * Events for the signed-in person only (new notifications, chat activity in any of
@@ -111,6 +123,7 @@ export function useUserEventsConnection(userId: string | null | undefined, onEve
       onSynced: () => {
         handlerRef.current({ userId, type: "NOTIFICATION" });
         handlerRef.current({ userId, type: "CHAT" });
+        handlerRef.current({ userId, type: "CALL" });
       },
       onStateless: ({ payload }) => {
         try {

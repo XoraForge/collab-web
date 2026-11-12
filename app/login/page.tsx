@@ -122,7 +122,7 @@ function LoginForm() {
                   className="flex gap-x-3 items-center"
                   variant="outline"
                   style={INPUT_STYLE}
-                  onClick={() => setNotice("Google sign-in is coming soon. Use your email for now.")}
+                  onClick={() => setNotice("Signing in with Google is coming soon. Use your email for now.")}
                 >
                   <Icon icon="devicon:google" />
                   <p>Log in with Google</p>
@@ -132,7 +132,7 @@ function LoginForm() {
                   className="flex gap-x-3 items-center"
                   variant="outline"
                   style={INPUT_STYLE}
-                  onClick={() => setNotice("Apple sign-in is coming soon. Use your email for now.")}
+                  onClick={() => setNotice("Signing in with Apple is coming soon. Use your email for now.")}
                 >
                   <Icon icon="ic:outline-apple" />
                   <p>Log in with Apple</p>

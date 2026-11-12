@@ -2,8 +2,10 @@
 
 import { createContext, useCallback, useContext, useState } from "react";
 
-type Toast = { id: number; text: string };
-type ToastFn = (text: string) => void;
+type ToastAction = { label: string; onClick: () => void };
+type ToastOptions = { action?: ToastAction; durationMs?: number };
+type Toast = { id: number; text: string; action?: ToastAction };
+type ToastFn = (text: string, options?: ToastOptions) => void;
 
 const ToastContext = createContext<ToastFn>(() => {});
 
@@ -23,11 +25,16 @@ let nextId = 1;
 export default function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const show = useCallback((text: string) => {
-    const id = nextId++;
-    setToasts((list) => [...list.slice(-2), { id, text }]);
-    setTimeout(() => setToasts((list) => list.filter((t) => t.id !== id)), 3500);
-  }, []);
+  const dismiss = useCallback((id: number) => setToasts((list) => list.filter((t) => t.id !== id)), []);
+
+  const show = useCallback<ToastFn>(
+    (text, options) => {
+      const id = nextId++;
+      setToasts((list) => [...list.slice(-2), { id, text, action: options?.action }]);
+      setTimeout(() => dismiss(id), options?.durationMs ?? (options?.action ? 10000 : 3500));
+    },
+    [dismiss]
+  );
 
   return (
     <ToastContext.Provider value={show}>
@@ -40,9 +47,21 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
           <div
             key={t.id}
             role="status"
-            className="pointer-events-auto rounded-md border bg-popover text-popover-foreground px-4 py-2 text-sm shadow-lg animate-in fade-in-0 slide-in-from-bottom-2"
+            className="pointer-events-auto flex items-center gap-x-3 rounded-md border bg-popover text-popover-foreground px-4 py-2 text-sm shadow-lg animate-in fade-in-0 slide-in-from-bottom-2"
           >
-            {t.text}
+            <span>{t.text}</span>
+            {t.action && (
+              <button
+                type="button"
+                className="shrink-0 rounded-md bg-primary text-primary-foreground px-2.5 py-1 text-xs font-semibold hover:opacity-90"
+                onClick={() => {
+                  dismiss(t.id);
+                  t.action?.onClick();
+                }}
+              >
+                {t.action.label}
+              </button>
+            )}
           </div>
         ))}
       </div>

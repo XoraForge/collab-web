@@ -29,7 +29,7 @@ export default function Page() {
     <div className="flex flex-col gap-y-5 px-4 sm:px-8 py-6 text-text max-w-2xl w-full">
       <div>
         <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-sm text-muted-text">Your profile and sign-in.</p>
+        <p className="text-sm text-muted-text">Your profile and password.</p>
       </div>
       <ProfileCard />
       <PasswordCard />

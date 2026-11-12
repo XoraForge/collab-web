@@ -362,7 +362,7 @@ function LeaderForm({
         <span className={labelClass}>Word target</span>
         <div className="flex items-center gap-x-1.5">
           <Input inputMode="numeric" placeholder="Min" value={min} onChange={(e) => setMin(e.target.value.replace(/\D/g, ""))} className="h-8 text-xs" aria-label="Minimum words" />
-          <span className="text-xs">–</span>
+          <span className="text-xs text-muted-text">to</span>
           <Input inputMode="numeric" placeholder="Max" value={max} onChange={(e) => setMax(e.target.value.replace(/\D/g, ""))} className="h-8 text-xs" aria-label="Maximum words" />
         </div>
       </div>

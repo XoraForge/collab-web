@@ -337,3 +337,14 @@ export type NoteDetail = { note: Note; contentJson: string | null };
 // ---------- Files ----------
 
 export type UploadedFile = { id: string; url: string; filename: string; contentType: string; size: number };
+
+// ---------- Calls ----------
+
+export type CallToken = { url: string; token: string; room: string };
+
+export type CallParticipant = { user: UserSummary; joinedAt: string | null };
+
+/** Who is in a project's call (empty = no call). */
+export type CallInfo = { projectId: string; participants: CallParticipant[] };
+
+export type ActiveCall = { projectId: string; participantCount: number };

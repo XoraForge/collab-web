@@ -29,7 +29,7 @@ export default function UserEventsProvider({ children }: { children: React.React
 }
 
 /** Calls `onEvent` for each of my events of the given type (e.g. "NOTIFICATION"). */
-export function useUserEvent(type: UserEvent["type"], onEvent: () => void) {
+export function useUserEvent(type: UserEvent["type"], onEvent: (event: UserEvent) => void) {
   const subscribe = useContext(UserEventsContext);
   const handler = useRef(onEvent);
   useEffect(() => {
@@ -38,7 +38,7 @@ export function useUserEvent(type: UserEvent["type"], onEvent: () => void) {
   useEffect(
     () =>
       subscribe((event) => {
-        if (event.type === type) handler.current();
+        if (event.type === type) handler.current(event);
       }),
     [subscribe, type]
   );

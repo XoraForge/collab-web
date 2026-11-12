@@ -83,8 +83,8 @@ export default function VersionDiffDialog({
                   <Avatar src={version.author?.imageUrl ?? undefined} name={authorName} size={18} />
                   <span>
                     {authorName} · {dayjs(version.createdAt).format("D MMM YYYY, h:mmA")} ·{" "}
-                    <span className="text-green-500">+{added}</span>{" "}
-                    <span className="text-red-400">−{removed}</span> words
+                    <span className="text-green-500">{added} words added</span>,{" "}
+                    <span className="text-red-400">{removed} removed</span>
                   </span>
                 </div>
               )}

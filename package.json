@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/dev-all.mjs",
+    "dev:web": "next dev",
     "build": "next build",
     "start": "next start",
     "prepare": "husky install",
@@ -37,6 +38,7 @@
     "dayjs": "^1.11.19",
     "diff": "^9.0.0",
     "docx": "^9.15.3",
+    "livekit-client": "2.23.0",
     "lucide-react": "^0.555.0",
     "next": "^16.1.1",
     "react": "19.2.0",

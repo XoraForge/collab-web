@@ -1,10 +1,11 @@
 "use client";
 
 import type { ChatChannel } from "@/lib/api/types";
+import { useCall } from "@/lib/CallContext";
 import dayjs from "@/lib/dayjs";
 import { useSession } from "@/lib/SessionContext";
 import { cn } from "@/lib/utils";
-import { BookOpenText } from "lucide-react";
+import { BookOpenText, Phone } from "lucide-react";
 import { plainPreview } from "./useChatChannels";
 
 function shortTime(iso: string) {
@@ -27,6 +28,7 @@ export default function ChannelList({
   onSelect: (channel: ChatChannel) => void;
 }) {
   const { me } = useSession();
+  const { activeCalls } = useCall();
 
   if (error && !channels) return <p className="p-4 text-sm text-muted-text">Couldn&apos;t load your chats.</p>;
   if (!channels) return <p className="p-4 text-sm text-muted-text">Loading…</p>;
@@ -44,6 +46,7 @@ export default function ChannelList({
       {channels.map((c) => {
         const last = c.lastMessage;
         const author = last ? (last.author.id === me?.user.id ? "You" : last.author.name || last.author.email) : null;
+        const inCall = activeCalls[c.projectId] ?? 0;
         return (
           <li key={c.id}>
             <button
@@ -68,10 +71,20 @@ export default function ChannelList({
                   <span className={cn("text-sm truncate", c.unreadCount > 0 ? "font-bold" : "font-semibold")}>
                     {c.projectName}
                   </span>
-                  {last && (
-                    <span className="text-[10px] text-muted-text shrink-0" suppressHydrationWarning>
-                      {shortTime(last.createdAt)}
+                  {inCall > 0 ? (
+                    <span
+                      className="flex items-center gap-x-1 text-[10px] font-semibold text-green-700 dark:text-green-400 shrink-0"
+                      title={`${inCall} in call`}
+                    >
+                      <Phone size={10} aria-hidden />
+                      {inCall} in call
                     </span>
+                  ) : (
+                    last && (
+                      <span className="text-[10px] text-muted-text shrink-0" suppressHydrationWarning>
+                        {shortTime(last.createdAt)}
+                      </span>
+                    )
                   )}
                 </span>
                 <span className="flex items-center justify-between gap-x-2">

@@ -14,7 +14,7 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Collab - Collaborate in one single app",
+  title: "Collab | Collaborate in one single app",
   description:
     "Collab combines group chat, scheduling, notes, task tracking, and simple document tools into one collaborative workspace so teams can get more done without switching apps.",
 };

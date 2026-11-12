@@ -1,5 +1,6 @@
 "use client";
 
+import JoinCallButtons from "@/components/call/JoinCallButtons";
 import ChannelList from "@/components/chat/ChannelList";
 import ChatRoom from "@/components/chat/ChatRoom";
 import { useChatChannels } from "@/components/chat/useChatChannels";
@@ -59,7 +60,7 @@ function ChatPage() {
               >
                 <ChevronLeft size={16} />
               </button>
-              <div className="min-w-0">
+              <div className="min-w-0 grow">
                 <Link href={`/dashboard/project/${selected.projectId}`} className="font-semibold hover:underline truncate block">
                   {selected.projectName}
                 </Link>
@@ -69,6 +70,7 @@ function ChatPage() {
                   </p>
                 )}
               </div>
+              <JoinCallButtons projectId={selected.projectId} className="shrink-0" />
             </header>
             <ChatRoom key={selected.id} channel={selected} onRead={refresh} className="max-w-4xl w-full self-center" />
           </>
