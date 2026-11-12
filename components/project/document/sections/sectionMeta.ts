@@ -14,10 +14,10 @@ export const STATUS_CLASS: Record<SectionStatus, string> = {
   DONE: "bg-green-600/20 text-green-700 dark:text-green-300",
 };
 
-/** "300–500", "300+", "≤500" or null. */
+/** "300 to 500", "300+", "≤500" or null. */
 export function wordTargetLabel(section: Pick<Section, "wordTargetMin" | "wordTargetMax">) {
   const { wordTargetMin: min, wordTargetMax: max } = section;
-  if (min != null && max != null) return `${min}–${max}`;
+  if (min != null && max != null) return `${min} to ${max}`;
   if (min != null) return `${min}+`;
   if (max != null) return `≤${max}`;
   return null;

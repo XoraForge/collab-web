@@ -119,7 +119,7 @@ export default function DashboardHome() {
           {isLoading ? (
             <p className="p-3 text-sm text-muted-text">Loading…</p>
           ) : myOpenTasks.length === 0 ? (
-            <p className="p-3 text-sm text-muted-text">Nothing assigned to you right now. 🎉</p>
+            <p className="p-3 text-sm text-muted-text">Nothing assigned to you right now.</p>
           ) : (
             myOpenTasks.map((task) => (
               <Link

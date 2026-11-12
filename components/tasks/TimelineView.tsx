@@ -183,7 +183,7 @@ export default function TimelineView({
               const index = Math.floor((e.clientX - rect.left) / W);
               onCreateAt(rangeStart.add(index, "day").format(ISO));
             }}
-            title="Double-click to add a task on this day"
+            title="Double click to add a task on this day"
           >
             {zoom === "day" &&
               dayList.map((d, i) =>
@@ -338,7 +338,7 @@ export default function TimelineView({
 
           {scheduled.length === 0 && (
             <div className="absolute text-sm text-muted-text" style={{ left: LEFT_W + 24, top: HEADER_H + 24 }}>
-              Nothing scheduled yet. Give a task a due date, or double-click a day to add one.
+              Nothing scheduled yet. Give a task a due date, or double click a day to add one.
             </div>
           )}
         </div>

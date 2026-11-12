@@ -26,10 +26,7 @@ export default function User() {
             )}
             <p className="hidden sm:block text-sm truncate">{me ? name : ""}</p>
           </div>
-          <div className="flex items-center gap-x-1 shrink-0">
-            <div className="size-1.5 rounded-full bg-green-500"></div>
-            <ChevronDown size={10} />
-          </div>
+          <ChevronDown size={10} className="shrink-0" />
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-60 p-1">

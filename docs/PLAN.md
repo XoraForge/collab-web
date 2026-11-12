@@ -166,6 +166,7 @@ Excel, PowerPoint, UML and graphs are each large builds. Strong existing librari
 
 ### 5.10 UI quality across the app
 Keeping the existing look; these make it feel finished:
+- **Copy rule (owner's request, 13 Nov 2026):** no emojis and no dashes of any kind in visible text: labels, tooltips, aria labels, toasts, placeholders, titles and API messages. Write "sign in", "double click", "12 Nov to 19 Nov", "300 to 500", "Not set".
 - **Consistent tokens**: many components use raw hex (`#383838`, `#ffffff70`, `#2e2e2e`) next to theme tokens. Moving them onto the tokens in `globals.css` keeps the look identical and makes light mode or rebranding easy later.
 - **Empty, loading and error states** for every list (projects, tasks, chat, notes), plus toast messages for actions like "Project created".
 - **Accessibility**: several clickable `div`s and bare icons (close ✕, chat previews, the expanded "+") should be real `<button>`s with labels. The custom dialog should trap focus and close on Esc (shadcn/Radix Dialog does this out of the box).
@@ -260,7 +261,7 @@ Voice could move earlier if it matters for launch. It's independent of the other
 ### 10 November 2026: database moved to Supabase
 - **Supabase Postgres 17 replaces Neon.** collab-api's `.env` now has `DB_URL` (direct connection, `sslmode=require`), `DB_USERNAME`, `DB_PASSWORD` (points at `SUPABASE_PASSWORD`), `JWT_SECRET`, `JWT_EXPIRATION_MS` and `INTERNAL_API_KEY` (same value as collab-realtime). `./mvnw spring-boot:run` now works without the `local` profile.
 - **Verified against Supabase:** sign-up, login, Premium with no limit, 3 projects, document + sections, task, work items, 401 without a token, internal key, and data surviving a restart.
-- Removed the unused `model/docx` classes. Their 8 tables (`documents`, `sections`, `paragraphs`, `elements`, `style`, `documents_sections`, `sections_paragraphs`, `paragraphs_elements`) still exist in Supabase and can be dropped.
+- Removed the unused `model/docx` classes. Their 8 tables (`documents`, `sections`, `paragraphs`, `elements`, `style`, `documents_sections`, `sections_paragraphs`, `paragraphs_elements`) were dropped from Supabase on 12 Nov.
 - `DB_URL` now uses the Supabase **Session pooler** (IPv4, works when deployed). It must be in JDBC form, `jdbc:postgresql://<pooler-host>:5432/postgres?sslmode=require`, not the `postgresql://user:password@…` string the dashboard shows. `DB_USERNAME` is `postgres.<project-ref>`, and `DB_PASSWORD` holds the database password. The unused `SUPABASE_*` variables were removed.
 
 ### 11 November 2026: notifications, activity, chat, notes, uploads, settings, small screens (steps 1–3)
@@ -281,6 +282,20 @@ Voice could move earlier if it matters for launch. It's independent of the other
 - **Small screens**: the sidebar becomes a slide-in drawer under 1024px (menu button in the header), the header and project page stack, project tabs scroll sideways. Checked at 390px wide on the dashboard, project, activity, notes, settings and chat pages. The document editor and timeline are still desktop-first.
 
 **Verified:** API end-to-end (88 checks), realtime WebSocket test (21: user rooms, chat events, typing, live notes, autosave, delete closes editors), two-person browser test on the production build (38: live bell, activity, chat with typing/reply/edit/delete, live notes with image upload, settings, mobile layouts, no console errors), a document editor regression check, API test suite, lint, typecheck, build.
+
+### 12 November 2026: calls (step 4)
+- **Supabase cleanup:** dropped the 8 unused docx tables and removed the smoke-test account and its 3 projects. Then created the owner's own account.
+- **Hosting:** local LiveKit server for now (see 10.4). `collab-realtime/livekit/` has `livekit.yaml` (dev key, webhook to the API), a README, and `npm run livekit`. The server binary goes in `livekit/bin/` (git-ignored; v1.13.11).
+- **collab-api:** `POST /projects/{id}/call/token` mints an HS256 LiveKit token for members only (room `project-<id>`, 6 h). `GET /projects/{id}/call` lists who is in the call, and `GET /calls` lists calls in my projects; both use LiveKit's RoomService. `POST /livekit/webhook` (public, verified against the LiveKit secret and body hash) pushes exact counts to members (`CALL` user event, `CALL_CHANGED` project event). When the first person joins, everyone else gets a `CALL_STARTED` event. Config: `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` (at least 32 characters; calls are off when unset). The `local` profile and `.env` point at the local server.
+- **Web:** `CallProvider` in the dashboard layout keeps the call going across pages. The old placeholder bar is replaced by a real call bar: status, project, timer, avatars with speaking rings, mute, deafen (also mutes you, Discord-style), camera, screen share, show/hide video, and Leave. A video stage with camera and screen tiles opens above the messenger when someone turns on video, and has a full-screen view (Esc closes it). The messenger header's call buttons start or join the call and show "N in call". The chat list and the full chat page show live calls, and the chat page has Call/Join buttons. Members get a "started a call" toast with **Join**. Toasts can now carry an action button.
+- **Fix:** opening chats in two requests at once could fail with a 500 (both created the project's chatroom). The room is now created in its own transaction and the loser re-reads it.
+
+**Verified:** 15 API checks (member-only tokens, HS256 room-scoped grants, 404 for non-members, 401 without login, forged webhooks rejected) and a 34-step two-person browser test with fake mic and camera: start, join prompt, audio both ways, speaking ring, mute/unmute seen by the other person, deafen/undeafen, camera, screen share, full screen, call kept while navigating, chat page buttons, leaving, live counts, no console errors. Also the API test suite, lint, typecheck and production build.
+
+### 13 November 2026: active team members, no emojis or dashes
+- **Header:** the broadcast button now shows **Active team members** (people you share a project with who are online: picture, name, "Active now"), refreshed every 20 s while open. The "What's new" list is gone, and so is the green dot on the profile chip. collab-realtime knows who is online (everyone signed in keeps a `user:<id>` room open) and answers `GET /internal/online`; collab-api's `GET /teammates/online` keeps only your teammates.
+- **App text:** no emojis and no dashes or hyphens anywhere people can see (see the copy rule in section 5.10).
+- **`npm run dev`** (web repo) starts web, realtime, API and LiveKit together. It refuses to start a service whose port is already taken, so an old server (possibly on another database) can't answer in its place.
 
 ## 8. Open questions
 
@@ -399,7 +414,8 @@ Collab is a **project-management SaaS**: projects with start and end dates, task
 - **Flow:** send via REST (saved and permission-checked), the API emits an event, and realtime pushes it to the project room. Typing indicators are live-only messages.
 - **UI:** the existing bottom-right Messenger: chat list = your projects, unread counts, and the chatroom view that's already designed.
 
-### 10.4 Voice and video calls while working
+### 10.4 Voice and video calls while working: DONE (12 Nov, local LiveKit)
+- **Hosting decided (12 Nov 2026): local only for now.** Build and test against `livekit-server --dev` on the developer machine. Choose LiveKit Cloud or self-hosting at deploy time (10.10); switching only changes `LIVEKIT_URL`, `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET`.
 - **Use LiveKit** (open-source WebRTC server; self-host, or LiveKit Cloud to start). Peer-to-peer breaks down beyond ~4 people and needs a TURN relay anyway; LiveKit includes both, plus screen sharing.
 - The API mints a LiveKit access token only for project members (room = project). The web app uses `livekit-client`.
 - **UI:** the existing call bar in the Messenger ("TeamCollab 05:43", mic / headset / settings) becomes a **persistent voice channel** in the dashboard layout. You stay in the call while moving between pages and editing documents, with mute, deafen, speaking indicators and screen share.
@@ -450,11 +466,13 @@ All of these reuse the document model (a file in a project made of assignable pa
 | 1 ✅ | Tasks + Timeline (10.1) | Core of a PM tool; sections already behave like tasks |
 | 2 ✅ | Notifications + activity (10.2) | Deadlines need reminders; feeds Health and the dashboard |
 | 3 ✅ | Chat (10.3) | Messenger UI already exists; reuses project events |
-| 4 | Calls (10.4) | Builds on the chat panel and project rooms |
+| 4 ✅ | Calls (10.4) | Builds on the chat panel and project rooms |
 | 5 | Meetings + Dashboard (10.5, 10.6) | Ties tasks, deadlines and calls together |
 | 6 | Project Health, rule checks only (10.7) | Needs tasks, activity and word targets in place |
 | 7 | Excel, then PowerPoint, then UML/graphs (10.8) | Same section model, one tool at a time |
-
-**Done (11 Nov 2026):** notifications + activity, usability gaps (Settings, Notes, uploads, small screens), project chat. Branch `feature/usable-app` in all three repos. **Next:** calls (10.4).
 | 8 | Production readiness (10.10) | Deploy once the core is solid |
 | Later | AI checks, AI command bar, payments, pricing, Free tier (10.9) | Parked until the app is usable |
+
+**Done (11 Nov 2026):** notifications + activity, usability gaps (Settings, Notes, uploads, small screens), project chat. Branch `feature/usable-app` in all three repos. **Done (12 Nov 2026):** calls (10.4) on a local LiveKit server. **Next:** meetings + dashboard (10.5, 10.6).
+
+**Supabase cleanup (12 Nov 2026):** dropped the 8 unused docx tables and removed the smoke-test account (`smoketest+…@collab.test`) with its 3 projects. Later the same day the API ran against Supabase, which created the 11 Nov tables (notifications, activity, chat, notes, stored files), and the owner's own account was created (Premium, no projects yet).

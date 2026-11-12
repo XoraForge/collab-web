@@ -4,6 +4,7 @@ import Header from "@/components/common/Header";
 import Messenger from "@/components/common/Messenger";
 import SideNav from "@/components/common/SideNav";
 import DialogLayout from "@/components/dialog/DialogLayout";
+import CallProvider from "@/lib/CallContext";
 import SessionProvider from "@/lib/SessionContext";
 import UserEventsProvider from "@/lib/UserEventsContext";
 import { useSidebarContext } from "@/lib/SidebarContext";
@@ -17,6 +18,7 @@ export default function DashboardLayout({
   return (
     <SessionProvider>
       <UserEventsProvider>
+      <CallProvider>
       <div className="flex h-screen relative">
         {/* Side Navigation: fixed on large screens, a slide-in drawer on small ones */}
         <div className="hidden lg:flex h-full">{isSidebarVisible && <SideNav />}</div>
@@ -54,6 +56,7 @@ export default function DashboardLayout({
       </div>
       {/* Dialogs need the session (e.g. to refresh projects after creating one) */}
       <DialogLayout />
+      </CallProvider>
       </UserEventsProvider>
     </SessionProvider>
   );

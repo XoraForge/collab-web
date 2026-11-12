@@ -2,17 +2,19 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+Collab runs as three repos side by side: this one, `../collab-realtime` and `../collab-api/collab-api`.
+One command starts everything (web, realtime, API and the LiveKit server for calls), with each
+service's output labelled. Ctrl+C stops them all:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev                       # API uses its .env (Supabase)
+npm run dev -- --local            # API uses the in-memory "local" profile instead
+npm run dev -- --no-livekit       # skip a service: --no-web, --no-realtime, --no-api, --no-livekit
+npm run dev:web                   # only this Next.js app
 ```
+
+The API needs Java 25; the script finds it in `~/.jdks` (or uses `JAVA_HOME` if it points at a JDK 25).
+For calls, download the LiveKit server first (see `../collab-realtime/livekit/README.md`).
 
 > ⚠️ **Git hooks:** This repo installs Git hooks via Husky. After cloning, run `npm install` (which runs `prepare`) to set up hooks.
 >

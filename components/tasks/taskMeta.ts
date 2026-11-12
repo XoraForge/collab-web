@@ -57,7 +57,7 @@ export function shortDate(iso: string | null) {
 
 export function dateRangeLabel(item: Pick<WorkItem, "startDate" | "dueDate">) {
   if (item.startDate && item.dueDate && item.startDate !== item.dueDate) {
-    return `${shortDate(item.startDate)} – ${shortDate(item.dueDate)}`;
+    return `${shortDate(item.startDate)} to ${shortDate(item.dueDate)}`;
   }
   return item.dueDate ? `Due ${shortDate(item.dueDate)}` : item.startDate ? `Starts ${shortDate(item.startDate)}` : null;
 }

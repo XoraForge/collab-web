@@ -52,21 +52,19 @@ export default function ListView({ items, onOpen }: { items: WorkItem[]; onOpen:
                     <span className={`size-2 rounded-full ${PRIORITY_DOT[item.priority]}`} />
                     {PRIORITY_LABEL[item.priority]}
                   </span>
-                ) : (
-                  <span className="text-muted-text">—</span>
-                )}
+                ) : null}
               </td>
               <td className="px-3 py-2">
                 <div className="flex -space-x-1.5">
                   {item.assignees.slice(0, 4).map((a) => (
                     <Avatar key={a.id} src={a.imageUrl ?? undefined} name={a.name || a.email} size={20} className="ring-1 ring-(--default-sidebar) text-[8px]" />
                   ))}
-                  {item.assignees.length === 0 && <span className="text-xs text-muted-text">—</span>}
+                  {item.assignees.length === 0 && <span className="text-xs text-muted-text">Unassigned</span>}
                 </div>
               </td>
-              <td className="px-3 py-2 text-xs">{shortDate(item.startDate) ?? <span className="text-muted-text">—</span>}</td>
+              <td className="px-3 py-2 text-xs">{shortDate(item.startDate) ?? <span className="text-muted-text">Not set</span>}</td>
               <td className={cn("px-3 py-2 text-xs", isOverdue(item) && "text-red-400 font-medium")}>
-                {shortDate(item.dueDate) ?? <span className="text-muted-text">—</span>}
+                {shortDate(item.dueDate) ?? <span className="text-muted-text">Not set</span>}
               </td>
             </tr>
           ))}
